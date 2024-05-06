@@ -27,6 +27,18 @@ The purpose of GiveNGet is to address two interconnected problems:
 
 ## Usage
 
+## Requirements
+
+- Node 0.10.x
+- Redis 2.6.x
+- Postgresql 9.1.x
+- etc
+- etc
+
+## Development
+
+### Installing Dependencies
+
 ### Clone the Repository
 
 ```
@@ -59,25 +71,6 @@ npm run dev -- in frontend
 npm run dev -- in server
 ```
 
-
-
-## Requirements
-
-- Node 0.10.x
-- Redis 2.6.x
-- Postgresql 9.1.x
-- etc
-- etc
-
-## Development
-
-### Installing Dependencies
-
-From within the root directory:
-
-```sh
-<COMMANDS_HERE>
-```
 
 ### Roadmap
 
