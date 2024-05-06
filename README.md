@@ -1,12 +1,19 @@
-# Project Name
+# GiveNGet
 
-> Pithy project description
+GiveNGet is a platform built by to address: too much waste, not enough resources, and financial struggles for many in our community. It's a virtual hub where people can share things they no longer need with others who could use them. Our goal with GiveNGet is to promote sustainability, strengthen community bonds, and reduce the negative impact of overconsumption on our planet.
+
+### Purpose
+The purpose of GiveNGet is to address two interconnected problems:
+
+1. **Excessive Consumerism:** GiveNGet addresses the issue of excess belongings by helping people share what they no longer need. This reduces clutter, prolongs the life of items, and cuts down on waste.
+
+2. **Financial Inequity:** GiveNGet tackles financial inequality by providing a platform where people can find essential items for free. This eases financial strain.
 
 ## Team
 
-  - __Product Owner__: teamMember
-  - __Scrum Master__: teamMember
-  - __Development Team Members__: teamMember, teamMember
+  - __Product Owner__: Ismael
+  - __Scrum Master__: TDB
+  - __Development Team Members__: Keyllne, nathaniel
 
 ## Table of Contents
 
@@ -20,7 +27,39 @@
 
 ## Usage
 
-> Some usage instructions for getting the app up and running locally
+### Clone the Repository
+
+```
+git clone <repository_url>
+```
+
+### Frontend Setup
+```
+cd frontend
+npm i
+npm run build
+```
+
+### Server Setup
+```
+cd ../server
+npm i
+```
+Ensure that the PostgreSQL database named "ink" is created.
+
+### Run database migrations:
+```
+npx knex migrate:latest
+npx knex seed:run
+```
+
+### Start project in development
+```
+npm run dev -- in frontend
+npm run dev -- in frontend
+```
+
+
 
 ## Requirements
 
