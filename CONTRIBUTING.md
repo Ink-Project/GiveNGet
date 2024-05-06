@@ -38,14 +38,14 @@ The `main` branch should always have working code so as a best practice...
 Each team member should own their own branch and work exclusively on that branch.
 
 ```
-git branch ben-feature-A
-git checkout ben-feature-A
+git branch izzy-feature-A
+git checkout izzy-feature-A
 ```
 
 Or, create a branch and switch to it in one command:
 
 ```
-git checkout -b ben-feature-A
+git checkout -b izzy-feature-A
 ```
 
 Then see all branches:
@@ -58,7 +58,7 @@ You should then see: (the `*` indicates the current branch)
 
 ```
   main
-* ben-feature-A
+* izzy-feature-A
 ```
 
 > TIP: Always check to make sure that you are NOT working in the `main` branch
@@ -67,7 +67,7 @@ To switch back and forth between `main` and your branch, run:
 
 ```sh
 git checkout main
-git checkout ben-feature-A
+git checkout izzy-feature-A
 ```
 
 ## Commit Changes
@@ -95,7 +95,7 @@ git pull
 Then, switch back to your feature branch and merge the changes from `main` _into your branch_.
 
 ```sh
-git checkout ben-feature-A
+git checkout izzy-feature-A
 git merge main
 ```
 
