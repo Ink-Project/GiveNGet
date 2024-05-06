@@ -56,7 +56,7 @@ npx knex seed:run
 ### Start project in development
 ```
 npm run dev -- in frontend
-npm run dev -- in frontend
+npm run dev -- in server
 ```
 
 
