@@ -20,7 +20,6 @@ export const seed = async (knex: Knex) => {
   await User.create("l33t-guy", "1234");
   await User.create("wowow", "1234");
 
-
     // Insert fake posts
     await knex('posts').insert([
       { title: 'First Post', desc: 'This is my first post. Here is a PS5 if anyone needs it', location: 'New York', user_id: 1 },
