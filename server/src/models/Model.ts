@@ -1,21 +1,23 @@
 import { Knex } from "knex";
 import knex from "../knex";
 
-export type MarshalAs = "pkey" | "string" | "number" | "datetime";
+type MarshalTypes = {
+  string: string;
+  number: number;
+  timestamp: Date;
+  datetime: Date;
+  pkey: number;
+};
+
+export type MarshalAs = keyof MarshalTypes;
 
 const validators = {
   string: (unk: unknown) => (typeof unk === "string" ? unk : undefined),
   number: (unk: unknown) => (typeof unk === "number" ? unk : undefined),
   pkey: (unk: unknown) => (typeof unk === "number" ? unk : undefined),
+  timestamp: (unk: unknown) => (unk instanceof Date ? unk : undefined),
   datetime: (unk: unknown) => (unk instanceof Date ? unk : undefined),
 } satisfies Record<MarshalAs, any>;
-
-type MarshalTypes = {
-  string: string;
-  number: number;
-  datetime: Date;
-  pkey: number;
-};
 
 type RemoveNever<T> = {
   [K in { [K in keyof T]: T[K] extends never ? never : K }[keyof T]]: T[K];
@@ -38,7 +40,7 @@ export default function model<S extends Record<string, MarshalAs>>(table: string
 
   type Data = { [P in keyof S]: MarshalTypes[S[P]] };
   type CreateData = RemoveNever<{
-    [P in keyof S]: S[P] extends "pkey" | "datetime" ? never : MarshalTypes[S[P]];
+    [P in keyof S]: S[P] extends "pkey" | "timestamp" ? never : MarshalTypes[S[P]];
   }>;
 
   return class Model {
@@ -89,7 +91,7 @@ export default function model<S extends Record<string, MarshalAs>>(table: string
       return Model.queryOne(query, values);
     }
 
-    static async updateRaw(id: number, data: Partial<CreateData>) {
+    async updateRaw(data: Partial<CreateData>) {
       // data keys are server controlled, sql injection doesn't matter here
       const values = Object.values(data);
       const keys = Object.keys(data).map((key) => `${key}=?`);
@@ -97,7 +99,7 @@ export default function model<S extends Record<string, MarshalAs>>(table: string
               UPDATE ${table} SET ${keys.join(", ")}
               WHERE id=?
               RETURNING *`;
-      values.push(id);
+      values.push(this.data[primaryKey!]); // cant be undefined
       return Model.queryOne(query, values);
     }
 

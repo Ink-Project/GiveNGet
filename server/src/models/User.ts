@@ -5,14 +5,14 @@ export default class User extends model("users", {
   id: "pkey",
   username: "string",
   password: "string",
-  created_at: "datetime",
-  updated_at: "datetime",
+  created_at: "timestamp",
+  updated_at: "timestamp",
 }) {
   async isValidPassword(plaintext: string) {
     return isValidPassword(plaintext, this.data.password);
   }
 
-  private static must(data: any) {
+  private static must(data?: typeof User.prototype.data) {
     if (!data) {
       // TODO
       throw new Error(`Validation failed for data: ${data}}`);
@@ -22,7 +22,7 @@ export default class User extends model("users", {
   }
 
   static async list() {
-    return (await User.listRaw()).map((data) => User.must(data));
+    return (await User.listRaw()).map(User.must);
   }
 
   static async find(id: number) {
@@ -44,6 +44,6 @@ export default class User extends model("users", {
   }
 
   async update(username: string) {
-    return User.must(await User.updateRaw(this.data.id, { username }));
+    return User.must(await this.updateRaw({ username }));
   }
 }

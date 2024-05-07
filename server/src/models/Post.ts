@@ -8,10 +8,10 @@ export default class Post extends model("posts", {
   description: "string",
   location: "string",
   user_id: "number",
-  created_at: "datetime",
-  updated_at: "datetime",
+  created_at: "timestamp",
+  updated_at: "timestamp",
 }) {
-  private static must(data: any) {
+  private static must(data?: typeof Post.prototype.data) {
     if (!data) {
       // TODO
       throw new Error(`Validation failed for data: ${data}}`);
@@ -30,12 +30,14 @@ export default class Post extends model("posts", {
     location: string,
     images: string[]
   ) {
-    const post = Post.must(await Post.createRaw({
+    const post = Post.must(
+      await Post.createRaw({
         title,
         description,
         location,
         user_id: creator.data.id,
-    }));
+      })
+    );
 
     for (const image of images) {
       await knex.raw("INSERT INTO images (url, post_id) VALUES (?, ?)", [image, post.data.id]);
@@ -44,7 +46,7 @@ export default class Post extends model("posts", {
   }
 
   static async list() {
-    return (await Post.listRaw()).map(data => Post.must(data));
+    return (await Post.listRaw()).map(Post.must);
   }
 
   static async find(id: number) {
@@ -53,6 +55,6 @@ export default class Post extends model("posts", {
   }
 
   async update(title: string, description: string, location: string) {
-    return Post.must(Post.updateRaw(this.data.id, { title, description, location }));
+    return Post.must(await this.updateRaw({ title, description, location }));
   }
 }
