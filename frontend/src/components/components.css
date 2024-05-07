@@ -1,0 +1,55 @@
+/* Navbar styling below */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* background-color: #333; Example background color */
+    /* color: white; Example text color */
+    padding: 10px 20px; /* Example padding */
+  }
+  
+  .pages {
+    display: flex;
+  }
+  
+  .link {
+    font-style: oblique;
+    font-size:large;
+    margin-left: 20px; /* Adjust as needed */
+    color: rgb(3, 3, 3); /* Example text color */
+    text-decoration: none; /* Remove default underline */
+    /* justify-content: space-between; */
+  }
+
+/*
+  .link:hover {
+    background-color: #ffdff5; 
+    border-radius: 50%;
+    width: max-content;
+  }
+*/
+
+  .button {
+    background-color: none; /* Button background color */
+    color: #070707; /* Button text color */
+    font-weight: 500;
+    border: 1px solid #090808;
+    /* padding: 10px 20px; */
+    /* border-radius: 5px; */
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-right: 5px;
+  }
+
+/*
+  .button:hover {
+    background-color: #ffdff5; 
+  }
+*/
+
+  .form-items {
+    display: flex;
+    align-items: center;
+  }
+  /* ___ styling below */
