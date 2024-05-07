@@ -5,7 +5,7 @@ import User from "./User";
 export default class Post extends model("posts", {
   id: "pkey",
   title: "string",
-  desc: "string",
+  description: "string",
   location: "string",
   user_id: "number",
   created_at: "datetime",
@@ -26,13 +26,13 @@ export default class Post extends model("posts", {
   static async create(
     creator: User,
     title: string,
-    desc: string,
+    description: string,
     location: string,
     images: string[]
   ) {
     const post = Post.must(await Post.createRaw({
         title,
-        desc,
+        description,
         location,
         user_id: creator.data.id,
     }));
@@ -52,7 +52,7 @@ export default class Post extends model("posts", {
     return data ? Post.must(data) : undefined;
   }
 
-  async update(title: string, desc: string, location: string) {
-    return Post.must(Post.updateRaw(this.data.id, { title, desc, location }));
+  async update(title: string, description: string, location: string) {
+    return Post.must(Post.updateRaw(this.data.id, { title, description, location }));
   }
 }

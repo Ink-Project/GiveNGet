@@ -86,8 +86,6 @@ export default function model<S extends Record<string, MarshalAs>>(table: string
             INSERT INTO ${table} (${Object.keys(data).join(", ")})
             VALUES (${"?, ".repeat(values.length).slice(0, -2)})
             RETURNING *`;
-        console.log(query);
-        console.log(values);
       return Model.queryOne(query, values);
     }
 
