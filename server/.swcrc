@@ -1,0 +1,26 @@
+{
+    "$schema": "https://json.schemastore.org/swcrc",
+    "jsc": {
+        "parser": {
+            "syntax": "typescript",
+            "decorators": true,
+            "dynamicImport": true,
+            "tsx": false
+        },
+        "transform": {
+            "legacyDecorator": true,
+            "decoratorMetadata": true
+        },
+        "target": "es2019",
+        "keepClassNames": true,
+        "loose": true
+    },
+    "module": {
+        "type": "commonjs",
+        "strict": true,
+        "noInterop": false,
+        "strictMode": true
+    },
+    "exclude": [".*\\.spec|test\\.ts$"],
+    "minify": true
+}
