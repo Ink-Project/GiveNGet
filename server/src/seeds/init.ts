@@ -1,3 +1,4 @@
+import User from "../models/User";
 import { Knex } from "knex";
 
 export const seed = async (knex: Knex) => {
@@ -15,11 +16,9 @@ export const seed = async (knex: Knex) => {
   await knex.raw("ALTER SEQUENCE event_log_id_seq RESTART WITH 1");
 
   /// Insert fake users
-  await knex('users').insert([
-    { fullname: 'John Doe', username: 'cool_cat', password: '1234' },
-    { fullname: 'Jane Doe', username: 'l33t-guy', password: '1234' },
-    { fullname: 'Who Smith', username: 'wowow', password: '1234' }
-  ]);
+  await User.create("cool_cat", "1234");
+  await User.create("l33t-guy", "1234");
+  await User.create("wowow", "1234");
 
 
     // Insert fake posts
