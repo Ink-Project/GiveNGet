@@ -3,7 +3,7 @@ import "./components.css";
 import { useState } from "react";
 
 const Navbar = () => {
-  const [inputValue, setInputValue] = useState("");
+  const [_inputValue, setInputValue] = useState("");
 
   return (
     <>
