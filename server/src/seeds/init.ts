@@ -42,7 +42,7 @@ export const seed = async (knex: Knex) => {
   
     // Insert fake event logs
     await knex('event_log').insert([
-      { event: 'reserved', actor_id: 1, post_id: 1, occurred_at: new Date() },
-      { event: 'created', actor_id: 2, post_id: 2, occurred_at: new Date() },
+      { event: 'reserved', actor_id: 1, post_id: 1 },
+      { event: 'created', actor_id: 2, post_id: 2 },
     ]);
 };
