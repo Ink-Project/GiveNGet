@@ -10,7 +10,7 @@ authRouter.get("/me", async (req, res) => {
     return res.sendStatus(401);
   }
 
-  res.send(await User.find(req.session.userId) || null);
+  res.send((await User.find(req.session.userId)) || null);
 });
 
 // This controller takes the provided username and password and finds
