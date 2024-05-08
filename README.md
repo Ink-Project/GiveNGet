@@ -13,7 +13,7 @@ The purpose of GiveNGet is to address two interconnected problems:
 
   - __Product Owner__: Ismael
   - __Scrum Master__: TDB
-  - __Development Team Members__: Keyllne, nathaniel
+  - __Development Team Members__: Kellyne, nathaniel
 
 ## Table of Contents
 
