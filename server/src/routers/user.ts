@@ -25,11 +25,11 @@ userRouter.post("/", async (req, res) => {
 
 // These actions require users to be logged in (authentication)
 // Express lets us pass a piece of middleware to run for a specific endpoint
-userRouter.get("/", checkAuthentication, async (_req, res) => {
+userRouter.get("/", async (_req, res) => {
   res.send(await User.list());
 });
 
-userRouter.get("/:id", checkAuthentication, async (req, res) => {
+userRouter.get("/:id", async (req, res) => {
   const user = await User.find(+req.params.id);
   if (!user) {
     return res.sendStatus(404);
