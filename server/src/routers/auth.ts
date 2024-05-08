@@ -29,7 +29,7 @@ authRouter.post("/login", async (req, res) => {
     return res.sendStatus(401);
   }
 
-  req.session!.userId = user.id;
+  req.session!.userId = user.data.id;
   res.send(user);
 });
 
