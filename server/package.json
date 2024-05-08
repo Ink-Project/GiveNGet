@@ -5,7 +5,7 @@
   "main": "dist/src/index.js",
   "scripts": {
     "build": "swc ./src knexfile.ts -d dist && npm run migrate:rollback && npm run migrate && npm run seed",
-    "start": "node dist/index.js",
+    "start": "node dist/src/index.js",
     "dev": "nodemon src/index.ts",
     "connect": "psql -U postgres -d react_auth_example",
     "migrate": "knex migrate:latest",
