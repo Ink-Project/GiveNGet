@@ -24,7 +24,7 @@ type RemoveNever<T> = {
 };
 
 export default function model<S extends Record<string, MarshalAs>>(table: string, schema: S) {
-  let primaryKey: string | undefined = undefined;
+  let primaryKey: string | undefined;
   for (const key in schema) {
     if (schema[key] === "pkey") {
       if (primaryKey) {

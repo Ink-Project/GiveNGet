@@ -1,5 +1,5 @@
 import { isValidPassword, hashPassword } from "../utils/auth";
-import model from "./Model";
+import model from "./model";
 
 export default class User extends model("users", {
   id: "pkey",

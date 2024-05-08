@@ -1,6 +1,7 @@
 import knex from "../knex";
-import model from "./Model";
+import model from "./model";
 import User from "./User";
+import Image from "./Image";
 
 export default class Post extends model("posts", {
   id: "pkey",
@@ -40,7 +41,7 @@ export default class Post extends model("posts", {
     );
 
     for (const image of images) {
-      await knex.raw("INSERT INTO images (url, post_id) VALUES (?, ?)", [image, post.data.id]);
+      Image.create(image, post);
     }
     return post;
   }
