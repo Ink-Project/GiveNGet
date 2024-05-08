@@ -20,7 +20,7 @@ export const seed = async (knex: Knex) => {
   const cool_cat = (await User.create("cool_cat", "1234"))!;
   await User.create("l33t-guy", "1234");
   await User.create("wowow", "1234");
-
+ 
   await Post.create(
     cool_cat,
     "First Post",
