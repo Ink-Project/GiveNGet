@@ -6,6 +6,7 @@ import SignUp from "./pages/Signup";
 import Inbox from "./pages/Inbox";
 import Landing from "./pages/Landing";
 import { Routes, Route } from "react-router-dom";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
