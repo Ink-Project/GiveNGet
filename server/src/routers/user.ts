@@ -18,18 +18,18 @@ userRouter.post("/", async (req, res) => {
 
   // TODO: check if username is taken, and if it is what should you return?
   const user = await User.create(username, password);
-  req.session!.userId = user!.id; // TODO: no !
+  req.session!.userId = user!.data.id; // TODO: no !
 
   res.send(user);
 });
 
 // These actions require users to be logged in (authentication)
 // Express lets us pass a piece of middleware to run for a specific endpoint
-userRouter.get("/", checkAuthentication, async (_req, res) => {
+userRouter.get("/", async (_req, res) => {
   res.send(await User.list());
 });
 
-userRouter.get("/:id", checkAuthentication, async (req, res) => {
+userRouter.get("/:id", async (req, res) => {
   const user = await User.find(+req.params.id);
   if (!user) {
     return res.sendStatus(404);
@@ -47,12 +47,17 @@ userRouter.patch("/:id", checkAuthentication, async (req, res) => {
     return res.sendStatus(403);
   }
 
-  const user = await User.update(id, req.body.username);
+  const user = await User.find(id);
   if (!user) {
     return res.sendStatus(404);
   }
 
-  res.send(user);
+  const updated = user.update(req.body.username);
+  if (!updated) {
+    return res.sendStatus(501);
+  }
+
+  res.send(updated);
 });
 
 export default userRouter;
