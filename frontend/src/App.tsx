@@ -7,6 +7,7 @@ import Inbox from "./pages/Inbox";
 import Landing from "./pages/Landing";
 import Users from "./pages/Users";
 import { Routes, Route } from "react-router-dom";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
