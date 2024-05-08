@@ -1,4 +1,3 @@
-import knex from "../knex";
 import model from "./model";
 import User from "./User";
 import Image from "./Image";

@@ -1,7 +1,7 @@
 import Post from "./Post";
 import model from "./model";
 
-export default class Image extends model("users", {
+export default class Image extends model("images", {
   id: "pkey",
   url: "string",
   post_id: "number",

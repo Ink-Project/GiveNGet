@@ -46,4 +46,10 @@ export default class User extends model("users", {
   async update(username: string) {
     return User.must(await this.updateRaw({ username }));
   }
+
+  toJSON() {
+    return JSON.stringify(this.data, (key, value) =>
+      key === "password" || key === "updated_at" ? undefined : value
+    );
+  }
 }

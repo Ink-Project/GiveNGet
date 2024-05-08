@@ -110,5 +110,9 @@ export default function model<S extends Record<string, MarshalAs>>(table: string
     static async deleteAll() {
       return knex(table).del();
     }
+
+    toJSON() {
+      return JSON.stringify(this.data);
+    }
   };
 }
