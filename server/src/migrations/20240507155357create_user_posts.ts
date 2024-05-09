@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     table.integer("user_id").notNullable();
     table.foreign('user_id').references("id").inTable("users");
     table.timestamps(true, true);
-  })
+  });
 }
 
 export const down = (knex: Knex) => knex.schema.dropTable("posts");
