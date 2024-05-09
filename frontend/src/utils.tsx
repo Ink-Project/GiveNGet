@@ -30,7 +30,7 @@ export const fetchHandler = async (url: string, options: RequestInit = {}): Prom
 
     const isJson = (headers.get('content-type') || '').includes('application/json');
     const responseData = await (isJson ? response.json() : response.text());
-
+    console.log(responseData)
     return [responseData, null];
   } catch (error) {
     console.warn(error);
