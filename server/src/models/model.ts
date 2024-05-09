@@ -1,6 +1,18 @@
 import { Knex } from "knex";
 import knex from "../db/knex";
 
+/**
+ * This type defines the types the model is capable of verifying, in the form <name>: <JS type>.
+ * Some types correspond to the same JS type, but may have different validation requirements or
+ * special purposes (ex. the 'pkey' type, of which there must be EXACTLY one in a schema).
+ *
+ * These types do not directly correspond to Postgres types. For example, the `timestamp` and
+ * `datetime` entries will validate any date, the only difference is that `timestamp`s are not
+ * required when calling `createRaw` or `updateRaw`.
+ *
+ * To add support for a new type to the model, add it to the type below, then add a validator that
+ * can verify (and optionally transform) a value of an unknown type to the correct JS type.
+ */
 type DbTypes = {
   string: string;
   number: number;
@@ -26,6 +38,12 @@ type RemoveNever<T> = {
   [K in { [K in keyof T]: T[K] extends never ? never : K }[keyof T]]: T[K];
 };
 
+/**
+ * Half query helper/half validator, 100% worse than knex or drizzle.
+ * @param table The Postgres table this model corresponds to
+ * @param schema A schema describing the data types of the table. See `DbTypes` for more info.
+ * @returns A class with helper functions for making queries against `table`
+ */
 export default function model<S extends Record<string, DbType>>(table: string, schema: S) {
   let primaryKey: string | undefined;
   for (const key in schema) {
@@ -51,6 +69,10 @@ export default function model<S extends Record<string, DbType>>(table: string, s
 
     constructor(public data: Data) {}
 
+    /**
+     * Validate a row returned from a sql query against the schema
+     * @returns data if validated correctly, undefined otherwise
+     */
     static fromTableRow(rawRow: unknown) {
       if (typeof rawRow !== "object" || rawRow === null) {
         return;
@@ -69,21 +91,27 @@ export default function model<S extends Record<string, DbType>>(table: string, s
       return row as Data;
     }
 
+    /** Make an arbitrary query expecting a single row back matching the schema. */
     static async queryOne(sql: string, binding: Knex.RawBinding) {
       const { rows } = await knex.raw(sql, binding);
       return Model.fromTableRow(rows[0]);
     }
 
+    /** Make an arbitrary query expecting multiple rows back matching the schema. */
     static async queryMany(sql: string, binding: Knex.RawBinding) {
       const { rows } = await knex.raw(sql, binding);
       return (rows as unknown[]).map(Model.fromTableRow);
     }
 
+    /** Get a list of all rows in the db */
     static async listRaw() {
+      // TODO: pagination, limit
+
       // table is controlled by the server
       return Model.queryMany(`SELECT * FROM ${table}`, []);
     }
 
+    /** Create an instance of this resource. Primary keys and timestamps are excluded by default */
     static async createRaw(data: CreateData) {
       // data keys are server controlled, sql injection doesn't matter here
       const values = Object.values(data);
@@ -94,6 +122,7 @@ export default function model<S extends Record<string, DbType>>(table: string, s
       return Model.queryOne(query, values);
     }
 
+    /** Update this instance of this resource. Primary keys and timestamps are excluded by default */
     async updateRaw(data: Partial<CreateData>) {
       // data keys are server controlled, sql injection doesn't matter here
       const values = Object.values(data);
@@ -106,10 +135,12 @@ export default function model<S extends Record<string, DbType>>(table: string, s
       return Model.queryOne(query, values);
     }
 
-    static async findBy<K extends keyof Data>(row: K, value: Data[K]) {
-      return await Model.queryOne(`SELECT * FROM ${table} WHERE ${String(row)} = ?`, [value]);
+    /** Find the first row for which `col` matches `value` */
+    static async findBy<K extends keyof Data>(col: K, value: Data[K]) {
+      return await Model.queryOne(`SELECT * FROM ${table} WHERE ${String(col)} = ?`, [value]);
     }
 
+    /** Clear all entries in this table and reset the primary key sequence */
     static async deleteAll() {
       await knex(table).del();
       await knex.raw(`ALTER SEQUENCE ${table}_${primaryKey}_seq RESTART WITH 1`);
