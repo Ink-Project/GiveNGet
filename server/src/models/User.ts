@@ -15,7 +15,7 @@ export default class User extends model("users", {
   private static must(data?: typeof User.prototype.data) {
     if (!data) {
       // TODO
-      throw new Error(`Validation failed for data: ${data}}`);
+      throw new Error(`Validation failed for data: ${data}`);
     }
 
     return new User(data);
@@ -27,12 +27,12 @@ export default class User extends model("users", {
 
   static async find(id: number) {
     const data = await User.findBy("id", id);
-    return data ? User.must(data) : undefined;
+    return data ? new User(data) : undefined;
   }
 
   static async findByUsername(username: string) {
     const data = await User.findBy("username", username);
-    return data ? User.must(data) : undefined;
+    return data ? new User(data) : undefined;
   }
 
   static async create(username: string, password: string) {
