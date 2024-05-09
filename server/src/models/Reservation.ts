@@ -1,4 +1,4 @@
-import Event from "./Event";
+import * as Event from "./Event";
 import Post from "./Post";
 import model from "./model";
 
@@ -35,38 +35,21 @@ export default class Reservation extends model("reservation", {
     return data ? new Reservation(data) : undefined;
   }
 
-  async reserve(userId: number) {
-    if (this.data.user_id !== null) {
-      return;
-    }
-
-    const post = await Post.find(this.data.post_id);
-    if (!post) {
-      return;
-    }
-
+  /** Reserve this time as user `userId`. */
+  async select(userId: number) {
     const data = Reservation.must(await this.updateRaw({ user_id: userId }));
     // TODO: create these together in one query
-    await Event.create("reserved", post.data.user_id, userId, userId);
-    await Event.create("reserved", post.data.user_id, post.data.user_id, userId);
+    await Event.create("reserved", this.data.post_id, userId, userId);
+    await Event.create("reserved", this.data.post_id, this.data.post_id, userId);
     return data;
   }
 
-  async cancel(userId: number) {
-    const post = await Post.find(this.data.post_id);
-    if (!post) {
-      return;
-    }
-
-    // TODO: this validation code should go somewhere else
-    if (post.data.id !== userId && this.data.user_id !== userId) {
-      return;
-    }
-
+  /** Cancel the reservation as user userId. */
+  async cancel(poster: number, actor: number) {
     const data = Reservation.must(await this.updateRaw({ user_id: null }));
     // TODO: create these together in one query
-    await Event.create("cancelled", post.data.user_id, userId, userId);
-    await Event.create("cancelled", post.data.user_id, post.data.user_id, userId);
+    await Event.create("cancelled", this.data.post_id, this.data.user_id!, actor);
+    await Event.create("cancelled", this.data.post_id, poster, actor);
     return data;
   }
 }

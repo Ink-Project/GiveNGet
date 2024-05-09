@@ -43,7 +43,7 @@ export const seed = async () => {
   );
 
   let [rev] = await Reservation.byPost(first.data.id);
-  rev = (await rev.reserve(leet_guy.data.id))!;
+  rev = (await rev.select(leet_guy.data.id))!;
   rev = (await rev.cancel(leet_guy.data.id))!;
-  rev = (await rev.reserve(wowow.data.id))!;
+  rev = (await rev.select(wowow.data.id))!;
 };
