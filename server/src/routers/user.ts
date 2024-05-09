@@ -3,7 +3,7 @@ import { isAuthorized } from "../utils/auth";
 import User from "../models/User";
 
 // Is the user logged in? Not specific user, just ANY user
-const checkAuthentication = (req: Request, res: Response, next: NextFunction) => {
+export const checkAuthentication = (req: Request, res: Response, next: NextFunction) => {
   if (typeof req.session?.userId !== "number") {
     return res.sendStatus(401);
   }
