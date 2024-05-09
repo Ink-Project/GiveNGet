@@ -1,9 +1,9 @@
-import { fetchHandler, getPostOptions, deleteOptions } from "../utils";
+import { fetchHandler, getPostOptions } from "../utils";
 
-const baseUrl = '/api';
+const baseUrl = "/api/v1";
 
 type LoggedInUserData = {
-  id: number;
+  id: string;
   username: string;
 };
 
@@ -17,11 +17,10 @@ export const checkForLoggedInUser = async (): Promise<LoggedInUserData | null> =
   return data || null;
 };
 
-export const logUserIn = async ({ username, password }: LoginParams): Promise<void> => {
-  await fetchHandler(`${baseUrl}/login`, getPostOptions({ username, password }));
+export const logUserIn = async ({ username, password }: LoginParams): Promise<any> => {
+  return fetchHandler(`${baseUrl}/login`, getPostOptions({ username, password }));
 };
 
-export const logUserOut = async (): Promise<boolean> => {
-  await fetchHandler(`${baseUrl}/logout`, deleteOptions);
-  return true;
-};
+// export const logUserOut = async (): Promise<any> => {
+//   return fetchHandler(`${baseUrl}/logout`, deleteOptions);
+// };

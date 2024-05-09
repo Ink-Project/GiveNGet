@@ -1,6 +1,6 @@
-import { fetchHandler, getPostOptions, getPatchOptions } from "../utils";
+import { fetchHandler, getPostOptions } from "../utils";
 
-const baseUrl = '/api/users';
+const baseUrl = "/api/v1/users";
 
 type User = {
   id: string;
@@ -21,16 +21,7 @@ export const getAllUsers = async (): Promise<User[]> => {
   return users || [];
 };
 
-export const getUser = async (id: string): Promise<User | null> => {
+export const getUser = async (id: string): Promise<any> => {
   const [user] = await fetchHandler(`${baseUrl}/${id}`);
   return user || null;
-};
-
-type UpdateUsernameParams = {
-  id: string;
-  username: string;
-};
-
-export const updateUsername = async ({ id, username }: UpdateUsernameParams): Promise<void> => {
-  await fetchHandler(`${baseUrl}/${id}`, getPatchOptions({ id, username }));
 };
