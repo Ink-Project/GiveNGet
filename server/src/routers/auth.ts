@@ -24,8 +24,7 @@ authRouter.post("/login", async (req, res) => {
     return res.sendStatus(404);
   }
 
-  const isPasswordValid = await user.isValidPassword(password);
-  if (!isPasswordValid) {
+  if (!await user.isValidPassword(password)) {
     return res.sendStatus(401);
   }
 
