@@ -115,8 +115,8 @@ export default function model<S extends Record<string, DbType>>(table: string, s
       await knex.raw(`ALTER SEQUENCE ${table}_${primaryKey}_seq RESTART WITH 1`);
     }
 
-    toJSON() {
-      return JSON.stringify(this.data);
+    toJSON(): object {
+      return this.data;
     }
   };
 }
