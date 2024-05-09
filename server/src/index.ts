@@ -4,6 +4,8 @@ import cookieSession from "cookie-session";
 import authRouter from "./routers/auth";
 import userRouter from "./routers/user";
 import dotenv from "dotenv";
+import postRouter from "./routers/post";
+import resvRouter from "./routers/reservation";
 
 dotenv.config();
 const app = express();
@@ -31,6 +33,8 @@ app.use(express.static(path.join(__dirname, "../frontend/dist"))); // Serve stat
 
 app.use("/api/v1", authRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/posts", postRouter);
+app.use("/api/v1/reservations", resvRouter);
 
 // Requests meant for the API will be sent along to the router.
 // For all other requests, send back the index.html file in the dist folder.
