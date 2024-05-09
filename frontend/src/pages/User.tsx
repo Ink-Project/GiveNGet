@@ -37,7 +37,7 @@ export default function UserPage() {
 
   return (
     <>
-      <h1>{profileUsername}</h1>
+      <h1>Hello {profileUsername}</h1>
       <p>If the user had any data, here it would be</p>
       <p>Fake Bio or something</p>
     </>

@@ -1,11 +1,20 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate} from "react-router-dom";
 import "./components.css";
 import { useContext, useState } from "react";
 import CurrentUserContext from "../context/CurrentUserContext";
+import { logUserOut } from "../adapters/auth-adapter";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [_inputValue, setInputValue] = useState("");
-  const { currentUser } = useContext(CurrentUserContext);
+  const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
+
+  const handleLogOut = async () => {
+    logUserOut();
+    setCurrentUser(null);
+    navigate('/')
+    
+  };
 
   return (
     <div className="navbar">
@@ -41,10 +50,8 @@ const Navbar = () => {
             </NavLink>
           </nav>
           <nav className="page-links">
-          <NavLink className="link" to="/login">
-            {/* {" "} */}
-            logout{" "}
-          </NavLink>
+          <button className="link" onClick={handleLogOut}>
+            Log out</button>
         </nav>
         </>
       ) : (

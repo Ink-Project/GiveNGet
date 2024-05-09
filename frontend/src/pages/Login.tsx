@@ -21,6 +21,7 @@ export default function LoginPage() {
       return false;
     }
     setCurrentUser(user);
+    
     navigate(`/users/${user.id}`);
   };
 

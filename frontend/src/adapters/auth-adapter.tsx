@@ -1,4 +1,4 @@
-import { fetchHandler, getPostOptions } from "../utils";
+import { fetchHandler, getPostOptions, deleteOptions } from "../utils";
 
 const baseUrl = "/api/v1";
 
@@ -21,6 +21,6 @@ export const logUserIn = async ({ username, password }: LoginParams): Promise<an
   return fetchHandler(`${baseUrl}/login`, getPostOptions({ username, password }));
 };
 
-// export const logUserOut = async (): Promise<any> => {
-//   return fetchHandler(`${baseUrl}/logout`, deleteOptions);
-// };
+export const logUserOut = async (): Promise<any> => {
+  return fetchHandler(`${baseUrl}/logout`, deleteOptions);
+};

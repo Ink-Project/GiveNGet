@@ -21,7 +21,7 @@ export const getAllUsers = async (): Promise<User[]> => {
   return users || [];
 };
 
-export const getUser = async (id: string): Promise<any> => {
-  const [user] = await fetchHandler(`${baseUrl}/${id}`);
-  return user || null;
+export const getUser = (id: string) => {
+  return fetchHandler(`${baseUrl}/${id}`);
+  // return user || null;
 };
