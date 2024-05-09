@@ -26,7 +26,7 @@ export const seed = async () => {
     cool_cat.data.id,
     "Second Post",
     "I am a software developer. I need to sell this laptop",
-    "Los Angeles",
+    "Brooklyn",
     ["https://cdn.britannica.com/77/170477-050-1C747EE3/Laptop-computer.jpg"],
     [new Date()]
   );
@@ -35,7 +35,7 @@ export const seed = async () => {
     cool_cat.data.id,
     "Third Post",
     "How do you knw youre not in the matrix!?!? #StayWoke. Also here a gift if anyone wants it",
-    "Los Angeles",
+    "Brooklyn",
     [
       "https://cdn.thewirecutter.com/wp-content/media/2023/05/sofabuyingguide-2048px-benchmademoderncream.jpg?auto=webp&quality=75&width=1024",
     ],
