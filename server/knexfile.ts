@@ -14,10 +14,10 @@ When we deploy in "production", we'll provide a PG_CONNECTION_STRING
 const common = {
   client: "pg",
   migrations: {
-    directory: path.join(__dirname, "./src/migrations"),
+    directory: path.join(__dirname, "./src/db/migrations"),
   } satisfies Knex.MigratorConfig,
   seeds: {
-    directory: path.join(__dirname, "./src/seeds"),
+    directory: path.join(__dirname, "./src/db/seeds"),
   } satisfies Knex.SeederConfig,
 };
 

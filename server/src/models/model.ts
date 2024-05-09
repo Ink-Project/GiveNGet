@@ -1,5 +1,5 @@
 import { Knex } from "knex";
-import knex from "../knex";
+import knex from "../db/knex";
 
 type DbTypes = {
   string: string;
