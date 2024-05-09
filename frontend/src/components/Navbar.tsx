@@ -1,10 +1,12 @@
 import { NavLink, useNavigate} from "react-router-dom";
-import "./components.css";
 import { useContext, useState } from "react";
 import CurrentUserContext from "../context/CurrentUserContext";
 import { logUserOut } from "../adapters/auth-adapter";
+import { Navbar } from 'react-bootstrap'
+import logo from "../images/logo.svg"
+import "./components.css";
 
-const Navbar = () => {
+const Nav = () => {
   const navigate = useNavigate();
   const [_inputValue, setInputValue] = useState("");
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
@@ -13,14 +15,14 @@ const Navbar = () => {
     logUserOut();
     setCurrentUser(null);
     navigate('/')
-    
   };
 
   return (
     <div className="navbar">
       <NavLink className="link" to="/">
-        {" "}
-        Icon Goes Here{" "}
+      <Navbar.Brand as={NavLink} to="/">
+        <img className="logo" src={logo} alt="Logo" height="60" width="100%"/>
+      </Navbar.Brand>
       </NavLink>
       {currentUser ? (
         <>
@@ -66,4 +68,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Nav;

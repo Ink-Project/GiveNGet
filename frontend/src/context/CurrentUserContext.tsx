@@ -7,12 +7,13 @@ type User = {
 
 type ContextType = {
   currentUser: User | null;
-  setCurrentUser: (user: User | null) => void;
+  setCurrentUser: (user: User | null) => void; // Function to set current user
 };
 
+// Creating context with initial values
 const CurrentUserContext = createContext<ContextType>({
   currentUser: null,
-  setCurrentUser: () => {},
+  setCurrentUser: () => {}, // Default function does nothing
 });
 
 export default CurrentUserContext;

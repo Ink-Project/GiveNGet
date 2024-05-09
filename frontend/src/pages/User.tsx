@@ -38,8 +38,8 @@ export default function UserPage() {
   return (
     <>
       <h1>Hello {profileUsername}</h1>
-      <p>If the user had any data, here it would be</p>
-      <p>Fake Bio or something</p>
+      <p>Users Posts would be here</p>
+      <p>Users can edit and delete their posts</p>
     </>
   );
 }

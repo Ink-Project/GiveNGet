@@ -4,23 +4,24 @@ import { Link, useNavigate } from "react-router-dom"
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({ // State for form data
     username: "",
     password: "",
   });
 
+  // Function to handle input changes in the form fields
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  // Function to handle form submission
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Fetch using V1 
+    // Sending POST request to '/api/v1/users/' with form data using fetchHandler utility function
     await fetchHandler('/api/v1/users/', getPostOptions(formData));
-    navigate('/')
-    console.log("User signed up successfully!");
+    navigate('/')  // Navigating to home page after successful sign up
   };
 
   return (
