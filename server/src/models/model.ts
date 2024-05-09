@@ -1,29 +1,32 @@
 import { Knex } from "knex";
-import knex from "../knex";
+import knex from "../db/knex";
 
-type MarshalTypes = {
+type DbTypes = {
   string: string;
   number: number;
   timestamp: Date;
   datetime: Date;
   pkey: number;
+
+  n_number: number | null;
 };
 
-export type MarshalAs = keyof MarshalTypes;
+export type DbType = keyof DbTypes;
 
 const validators = {
-  string: (unk: unknown) => (typeof unk === "string" ? unk : undefined),
-  number: (unk: unknown) => (typeof unk === "number" ? unk : undefined),
-  pkey: (unk: unknown) => (typeof unk === "number" ? unk : undefined),
-  timestamp: (unk: unknown) => (unk instanceof Date ? unk : undefined),
-  datetime: (unk: unknown) => (unk instanceof Date ? unk : undefined),
-} satisfies Record<MarshalAs, any>;
+  string: (unk) => (typeof unk === "string" ? unk : undefined),
+  number: (unk) => (typeof unk === "number" ? unk : undefined),
+  pkey: (unk) => (typeof unk === "number" ? unk : undefined),
+  timestamp: (unk) => (unk instanceof Date ? unk : undefined),
+  datetime: (unk) => (unk instanceof Date ? unk : undefined),
+  n_number: (unk) => (unk === null || typeof unk === "number" ? unk : undefined),
+} satisfies Record<DbType, (_: unknown) => any>;
 
 type RemoveNever<T> = {
   [K in { [K in keyof T]: T[K] extends never ? never : K }[keyof T]]: T[K];
 };
 
-export default function model<S extends Record<string, MarshalAs>>(table: string, schema: S) {
+export default function model<S extends Record<string, DbType>>(table: string, schema: S) {
   let primaryKey: string | undefined;
   for (const key in schema) {
     if (schema[key] === "pkey") {
@@ -38,9 +41,9 @@ export default function model<S extends Record<string, MarshalAs>>(table: string
     throw new Error("Must have exactly one primary key");
   }
 
-  type Data = { [P in keyof S]: MarshalTypes[S[P]] };
+  type Data = { [P in keyof S]: DbTypes[S[P]] };
   type CreateData = RemoveNever<{
-    [P in keyof S]: S[P] extends "pkey" | "timestamp" ? never : MarshalTypes[S[P]];
+    [P in keyof S]: S[P] extends "pkey" | "timestamp" ? never : DbTypes[S[P]];
   }>;
 
   return class Model {
@@ -108,7 +111,8 @@ export default function model<S extends Record<string, MarshalAs>>(table: string
     }
 
     static async deleteAll() {
-      return knex(table).del();
+      await knex(table).del();
+      await knex.raw(`ALTER SEQUENCE ${table}_${primaryKey}_seq RESTART WITH 1`);
     }
 
     toJSON() {

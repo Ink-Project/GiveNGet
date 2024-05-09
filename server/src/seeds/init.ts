@@ -59,3 +59,4 @@ export const seed = async (knex: Knex) => {
     { event: "created", actor_id: 2, post_id: 2 },
   ]);
 };
+
