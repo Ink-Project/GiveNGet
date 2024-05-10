@@ -1,49 +1,33 @@
-import Event from "../../models/Event";
-import Post from "../../models/Post";
-import Reservation from "../../models/Reservation";
-import User from "../../models/User";
+import model from "../../models/model";
+export const EVENT_TYPES = ["reserved", "cancelled"] as const;
 
-export const seed = async () => {
-  await Event.deleteAll();
-  await Reservation.deleteAll();
-  await Post.deleteAll();
-  await User.deleteAll();
+export type EventType = (typeof EVENT_TYPES)[number];
 
-  const cool_cat = (await User.create("cool_cat", "1234"))!;
-  const leet_guy = (await User.create("l33t-guy", "1234"))!;
-  const wowow = (await User.create("wowow", "1234"))!;
+const Event = model("event_log", {
+  id: "pkey",
+  event: "string",
+  user_id: "number",
+  actor_id: "number",
+  post_id: "number",
+  created_at: "timestamp",
+});
 
-  const first = await Post.create(
-    cool_cat.data.id,
-    "First Post",
-    "This is my first post. Here is a PS5 if anyone needs it",
-    "New York",
-    ["https://cdn.mos.cms.futurecdn.net/HkdMToxijoHfz4JwUgfh3G.jpg"],
-    [new Date()]
+/**
+ * @param userId The ID for the user this event is relevant to
+ * @param actorId The ID of the user that initiated this event, ex. for a cancel event, this is
+ * the user that initiated the cancel.
+ */
+export function create(event: EventType, postId: number, userId: number, actorId: number) {
+  return Event.createRaw({ event, post_id: postId, user_id: userId, actor_id: actorId });
+}
+
+/** Get all relevant events for a user in chronological order */
+export function inboxFor(userId: number) {
+  return Event.queryMany(
+    `
+      SELECT * from ${Event.table}
+      WHERE user_id = ?
+      ORDER BY created_at ASC`,
+    [userId]
   );
-
-  await Post.create(
-    cool_cat.data.id,
-    "Second Post",
-    "I am a software developer. I need to sell this laptop",
-    "Brooklyn",
-    ["https://cdn.britannica.com/77/170477-050-1C747EE3/Laptop-computer.jpg"],
-    [new Date()]
-  );
-
-  await Post.create(
-    cool_cat.data.id,
-    "Third Post",
-    "How do you knw youre not in the matrix!?!? #StayWoke. Also here a gift if anyone wants it",
-    "Brooklyn",
-    [
-      "https://cdn.thewirecutter.com/wp-content/media/2023/05/sofabuyingguide-2048px-benchmademoderncream.jpg?auto=webp&quality=75&width=1024",
-    ],
-    [new Date()]
-  );
-
-  let [rev] = await Reservation.byPost(first.data.id);
-  rev = (await rev.select(leet_guy.data.id))!;
-  rev = (await rev.cancel(leet_guy.data.id))!;
-  rev = (await rev.select(wowow.data.id))!;
-};
+}

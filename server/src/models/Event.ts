@@ -4,7 +4,7 @@ export const EVENT_TYPES = ["reserved", "cancelled"] as const;
 
 export type EventType = (typeof EVENT_TYPES)[number];
 
-const Event = model("event_log", {
+export const Event = model("event_log", {
   id: "pkey",
   event: "string",
   user_id: "number",
