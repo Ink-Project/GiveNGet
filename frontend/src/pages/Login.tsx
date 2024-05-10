@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 export default function LoginPage() {
   const navigate = useNavigate();
   const [errorText, setErrorText] = useState('');
-  const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
+  const { currentUser, setCurrentUser } = useContext(CurrentUserContext); // Getting current user context
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
@@ -15,16 +15,19 @@ export default function LoginPage() {
     const formData = new FormData(event.target as HTMLFormElement);
     const username = formData.get('username') as string;
     const password = formData.get('password') as string;
-    const [user, error] = await logUserIn({ username, password });
+    const [user, error] = await logUserIn({ username, password }); // Logging in user
     if (error) {
-      setErrorText(error.message);
+      setErrorText(error.message); // Setting error message if login fails
       return false;
     }
-    setCurrentUser(user);
+    // Setting current user context
+    setCurrentUser(user);  
     
-    navigate(`/users/${user.id}`);
+    // Navigating to user's profile page
+    navigate(`/users/${user.id}`); 
   };
 
+  // Redirecting if user is already logged in
   if (currentUser) {
     return <Navigate to="/" />;
   }

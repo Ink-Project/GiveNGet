@@ -1,69 +1,58 @@
-import { NavLink, useNavigate} from "react-router-dom";
-import "./components.css";
-import { useContext, useState } from "react";
-import CurrentUserContext from "../context/CurrentUserContext";
+import { useNavigate, NavLink} from "react-router-dom";
 import { logUserOut } from "../adapters/auth-adapter";
+import { useContext } from "react";
+import CurrentUserContext from "../context/CurrentUserContext";
+import { Navbar, Nav, Container , Dropdown } from 'react-bootstrap'
+import logo from "../images/logo.svg"
+import user from "../images/user.svg"
+import "./components.css";
 
-const Navbar = () => {
+const NavBar = () => {
   const navigate = useNavigate();
-  const [_inputValue, setInputValue] = useState("");
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
+  const { id } = currentUser || {};
 
   const handleLogOut = async () => {
     logUserOut();
     setCurrentUser(null);
-    navigate('/')
-    
-  };
+    navigate('/');
+  }
 
   return (
-    <div className="navbar">
-      <NavLink className="link" to="/">
-        {" "}
-        Icon Goes Here{" "}
-      </NavLink>
-      {currentUser ? (
-        <>
-          <form className="form">
-            <div className="form-items">
-              <input
-                className="item"
-                type="text"
-                placeholder="Search posts"
-                onChange={(e) => setInputValue(e.target.value)}
-                autoComplete="off"
-              />
-              <br />
-              <button className="button" type="submit">
-                Search
-              </button>
-            </div>
-          </form>
-          <nav className="page-links">
-            <NavLink className="link" to="/posts">
-              {" "}
-              Posts{" "}
-            </NavLink>
-            <NavLink className="link" to="/inbox">
-              {" "}
-              Inbox{" "}
-            </NavLink>
-          </nav>
-          <nav className="page-links">
-          <button className="link" onClick={handleLogOut}>
-            Log out</button>
-        </nav>
-        </>
-      ) : (
-        <nav className="page-links">
-          <NavLink className="link" to="/login">
-            {" "}
-            Login{" "}
-          </NavLink>
-        </nav>
-      )}
-    </div>
-  );
+    <Navbar className='white shadow-lg mb-3'>
+      <Container>
+        <Navbar.Brand to="/" as={NavLink}>
+          <img className='logo' src={logo} alt="Logo" height="60" width="100%"/>  
+        </Navbar.Brand>
+        <Nav className="ms-auto align-items-center">
+          {currentUser ? (
+            <>
+              <Nav.Link to="/posts" as={NavLink}>Posts</Nav.Link>
+              <Nav.Link to="/inbox" as={NavLink}>Inbox</Nav.Link>
+              <Dropdown>
+                <Dropdown.Toggle variant="outline primary">
+                  <img style={{ width: '3rem', height: '4rem'}} src={user} alt="user image" />
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item to={`/users/${id}`} as={NavLink}>Profile</Dropdown.Item>
+                  <Dropdown.Item onClick={handleLogOut}>Logout</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </>
+          ) : (
+            <Dropdown>
+              <Dropdown.Toggle variant="outline primary">
+                <img style={{ width: '3rem', height: '4rem'}} src={user} alt="user image" />
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item as={NavLink} to="/login">Login</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
+        </Nav>
+      </Container>
+    </Navbar>
+  );  
 };
 
-export default Navbar;
+export default NavBar;

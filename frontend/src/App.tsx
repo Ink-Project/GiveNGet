@@ -1,5 +1,5 @@
 import "./App.css";
-import Navbar from "./components/Navbar";
+import NavBar from "./components/NavBar"
 import Posts from "./pages/Posts";
 import Login from "./pages/Login";
 import SignUp from "./pages/Signup";
@@ -7,12 +7,11 @@ import Inbox from "./pages/Inbox";
 import Landing from "./pages/Landing";
 import UsersPage from "./pages/User"
 import { Routes, Route } from "react-router-dom";
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
     <>
-      <Navbar />
+      <NavBar />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/users/:id" element={<UsersPage />} />
