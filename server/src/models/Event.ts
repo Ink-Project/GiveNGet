@@ -4,7 +4,7 @@ export const EVENT_TYPES = ["reserved", "cancelled"] as const;
 
 export type EventType = (typeof EVENT_TYPES)[number];
 
-export const Event = model("event_log", {
+const Event = model("event_log", {
   id: "pkey",
   event: "string",
   user_id: "number",
@@ -31,4 +31,8 @@ export function inboxFor(userId: number) {
       ORDER BY created_at ASC`,
     [userId]
   );
+}
+
+export function deleteAll() {
+  return Event.deleteAll();
 }

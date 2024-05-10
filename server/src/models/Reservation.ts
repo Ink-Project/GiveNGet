@@ -1,5 +1,4 @@
 import * as Event from "./Event";
-import Post from "./Post";
 import model from "./model";
 
 export default class Reservation extends model("reservation", {
