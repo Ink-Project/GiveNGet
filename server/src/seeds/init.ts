@@ -26,7 +26,7 @@ export const seed = async (knex: Knex) => {
     "First Post",
     "This is my first post. Here is a PS5 if anyone needs it",
     "Brooklyn",
-    ["https://cdn.mos.cms.futurecdn.net/HkdMToxijoHfz4JwUgfh3G.jpg"]
+    ["https://cdn.mos.cms.futurecdn.net/HkdMToxijoHfz4JwUgfh3G.jpg"],
   );
 
   await Post.create(

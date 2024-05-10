@@ -1,5 +1,5 @@
 import "./App.css";
-import Nav from "./components/Navbar";
+import NavBar from "./components/NavBar"
 import Posts from "./pages/Posts";
 import Login from "./pages/Login";
 import SignUp from "./pages/Signup";
@@ -11,7 +11,7 @@ import { Routes, Route } from "react-router-dom";
 function App() {
   return (
     <>
-      <Nav />
+      <NavBar />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/users/:id" element={<UsersPage />} />
