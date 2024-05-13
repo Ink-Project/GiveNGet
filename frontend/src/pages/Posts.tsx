@@ -2,7 +2,7 @@ import { fetchHandler } from "../utils";
 import { useState, useEffect, useContext } from "react";
 import CurrentUserContext from "../context/CurrentUserContext";
 import { Navigate } from "react-router-dom";
-import { Container, Row, Card, Modal } from "react-bootstrap";
+import { Container, Row, Card, Modal, Col } from "react-bootstrap";
 
 type Post = {
   id: number;
@@ -14,8 +14,9 @@ type Post = {
 
 const Posts = () => {
   const [posts, setPosts] = useState<Post[][]>([]);
+  const [images, setImages] = useState<Post[][]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [showModal, setShowModal] = useState(false); 
+  const [showModal, setShowModal] = useState(false);
   const { currentUser } = useContext(CurrentUserContext);
 
   useEffect(() => {
@@ -25,6 +26,14 @@ const Posts = () => {
     };
 
     fetchPosts();
+  }, []);
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const data = await fetchHandler("/api/v1/posts/images");
+      setImages(data);
+    };
+    fetchImages();
   }, []);
 
   if (!currentUser) return <Navigate to="/login" />;
@@ -44,13 +53,19 @@ const Posts = () => {
             return (
               <Row key={index}>
                 {postOrArray.map((post) => (
-                  <div className="col-md-4 mb-4" key={post.id}>
+                  <div className="col-md-3 mb-4" key={post.id}>
                     <Card onClick={() => handleCardClick(post)}>
+                      <Card.Img
+                        src="https://via.placeholder.com/150"
+                        alt="Placeholder"
+                        className="img-fluid w-100"
+                      />
                       <Card.Body>
-                        <Card.Title>{post.title}</Card.Title>
+                        <Card.Title className="text-center">{post.title}</Card.Title>
                         <Card.Text>
                           {/* ID: {post.id}<br /> */}
-                          Location: {post.location}<br />
+                          Location: {post.location}
+                          <br />
                           {/* Posted By: {post.user_id} */}
                         </Card.Text>
                       </Card.Body>
@@ -60,20 +75,33 @@ const Posts = () => {
               </Row>
             );
           }
-          return null;
         })}
       </Container>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
         <Modal.Header closeButton>
           <Modal.Title>{selectedPost?.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Description: {selectedPost?.description}</p>
-          <p>Location: {selectedPost?.location}</p>
+          <Container fluid>
+            <Row>
+              <Col>
+                <img
+                  src="https://via.placeholder.com/150"
+                  alt="Placeholder"
+                  className="img-fluid"
+                  style={{ maxWidth: "100%", height: "20rem" }}
+                />
+              </Col>
+              <Col>
+                <p>Description: {selectedPost?.description}</p>
+                <p>Location: {selectedPost?.location}</p>
+                <p>User ID: {selectedPost?.user_id}</p>
+              </Col>
+            </Row>
+          </Container>
         </Modal.Body>
       </Modal>
-
     </>
   );
 };
