@@ -2,7 +2,7 @@ const Inbox = () => {
   return (
     <div>
       <p>Your Inbox lies here</p>
-      <table className ="table">
+      <table className="table">
         <thead>
           <tr>
             <th scope="col">Item Name</th>
@@ -29,8 +29,7 @@ const Inbox = () => {
         </tbody>
       </table>
     </div>
-    
-  ) 
+  );
 };
 
 export default Inbox;

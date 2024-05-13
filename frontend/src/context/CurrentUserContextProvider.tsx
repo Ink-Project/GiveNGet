@@ -1,5 +1,5 @@
-import { useState, ReactNode } from 'react';
-import CurrentUserContext from './CurrentUserContext';
+import { useState, ReactNode } from "react";
+import CurrentUserContext from "./CurrentUserContext";
 
 type Props = {
   children: ReactNode; // Children components
@@ -12,8 +12,6 @@ export default function CurrentUserContextProvider({ children }: Props) {
 
   return (
     // Providing CurrentUserContext with context value to its children
-    <CurrentUserContext.Provider value={context}>
-      {children}
-    </CurrentUserContext.Provider>
+    <CurrentUserContext.Provider value={context}>{children}</CurrentUserContext.Provider>
   );
 }

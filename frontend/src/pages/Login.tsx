@@ -6,25 +6,25 @@ import { Link } from "react-router-dom";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const [errorText, setErrorText] = useState('');
+  const [errorText, setErrorText] = useState("");
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext); // Getting current user context
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
-    setErrorText('');
+    setErrorText("");
     const formData = new FormData(event.target as HTMLFormElement);
-    const username = formData.get('username') as string;
-    const password = formData.get('password') as string;
+    const username = formData.get("username") as string;
+    const password = formData.get("password") as string;
     const [user, error] = await logUserIn({ username, password }); // Logging in user
     if (error) {
       setErrorText(error.message); // Setting error message if login fails
       return false;
     }
     // Setting current user context
-    setCurrentUser(user);  
-    
+    setCurrentUser(user);
+
     // Navigating to user's profile page
-    navigate(`/users/${user.id}`); 
+    navigate(`/users/${user.id}`);
   };
 
   // Redirecting if user is already logged in
@@ -36,7 +36,7 @@ export default function LoginPage() {
     <>
       <h1>Login</h1>
       <form onSubmit={handleSubmit} aria-labelledby="login-heading">
-        <h2 id='login-heading'>Log back in!</h2>
+        <h2 id="login-heading">Log back in!</h2>
         <label htmlFor="username">Username</label>
         <input type="text" autoComplete="username" id="username" name="username" />
 

@@ -6,29 +6,28 @@ import { getUser } from "../adapters/user-adapter";
 type User = {
   id: string;
   username: string;
-}
+};
 
 export default function UserPage() {
   const { currentUser } = useContext(CurrentUserContext);
   const [userProfile, setUserProfile] = useState<User | null>(null);
   const [errorText, setErrorText] = useState<string | null>(null);
-  const { id } = useParams()
+  const { id } = useParams();
 
   const isCurrentUserProfile = currentUser && Number(currentUser.id) === Number(id);
-
 
   useEffect(() => {
     const loadUser = async () => {
       if (id) {
-      const [user, error] = await getUser(id);
-      if (error) {
-        return setErrorText(error.message);
+        const [user, error] = await getUser(id);
+        if (error) {
+          return setErrorText(error.message);
+        }
+        setUserProfile(user);
       }
-      setUserProfile(user);
-    }
-  }
+    };
     loadUser();
-  }, [id])
+  }, [id]);
 
   if (!userProfile && !errorText) return null;
   if (errorText) return <p>{errorText}</p>;
