@@ -57,16 +57,19 @@ export default function model<S extends Record<string, VType>, T>(
       return (transform && data ? transform(data) : data) as FromRowOutput | undefined;
     },
 
+    async raw(sql: string, binding: Knex.RawBinding) {
+      const { rows } = await knex.raw(sql, binding);
+      return rows as unknown[];
+    },
+
     /** Make an arbitrary query expecting a single row back matching the schema. */
     async queryOne(sql: string, binding: Knex.RawBinding) {
-      const { rows } = await knex.raw(sql, binding);
-      return this.fromTableRow(rows[0]);
+      return this.fromTableRow((await this.raw(sql, binding))[0]);
     },
 
     /** Make an arbitrary query expecting multiple rows back matching the schema. */
     async queryMany(sql: string, binding: Knex.RawBinding) {
-      const { rows } = await knex.raw(sql, binding);
-      return (rows as unknown[]).map((r) => this.fromTableRow(r));
+      return (await this.raw(sql, binding)).map((r) => this.fromTableRow(r));
     },
 
     /** Get a list of all rows in the db */

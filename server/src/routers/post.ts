@@ -17,7 +17,7 @@ const validatePostCreate = createValidator({
 postRouter.post("/", checkAuthentication, async (req, res) => {
   const data = validatePostCreate(req.body);
   if (!data) {
-    return res.send(400);
+    return res.sendStatus(400);
   }
 
   res.send(await Post.create(
@@ -49,20 +49,25 @@ postRouter.get("/:id", async (req, res) => {
 });
 
 postRouter.patch("/:id", checkAuthentication, async (req, res) => {
-  const id = +req.params.id;
-  // Not only do users need to be logged in to update a post, they
-  // need to be authorized to perform this action for this particular
-  // user (users should only be able to change their own post)
-  if (!isAuthorized(id, req.session as { userId: number })) {
-    return res.sendStatus(403);
+  const data = validatePostUpdate(req.body);
+  if (!data) {
+    return res.sendStatus(400);
   }
 
+  const id = +req.params.id;
   const post = await Post.find(id);
   if (!post) {
     return res.sendStatus(404);
   }
 
-  const updated = Post.update(post, req.body.title, req.body.description, req.body.location);
+  // Not only do users need to be logged in to update a post, they
+  // need to be authorized to perform this action for this particular
+  // user (users should only be able to change their own post)
+  if (!isAuthorized(post.user_id, req.session?.userId)) {
+    return res.sendStatus(403);
+  }
+
+  const updated = await Post.update(post, data.title, data.description, data.location);
   if (!updated) {
     return res.sendStatus(501);
   }

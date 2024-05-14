@@ -18,12 +18,12 @@ const events = model("event_log", {
  * @param actorId The ID of the user that initiated this event, ex. for a cancel event, this is
  * the user that initiated the cancel.
  */
-export function create(event: EventType, postId: number, userId: number, actorId: number) {
+export const create = (event: EventType, postId: number, userId: number, actorId: number) => {
   return events.create({ event, post_id: postId, user_id: userId, actor_id: actorId });
-}
+};
 
 /** Get all relevant events for a user in chronological order */
-export function inboxFor(userId: number) {
+export const inboxFor = (userId: number) => {
   return events.queryMany(
     `
       SELECT * from ${events.table}
@@ -31,8 +31,6 @@ export function inboxFor(userId: number) {
       ORDER BY created_at ASC`,
     [userId]
   );
-}
+};
 
-export function deleteAll() {
-  return events.deleteAll();
-}
+export const deleteAll = () => events.deleteAll();
