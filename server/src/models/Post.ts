@@ -49,7 +49,7 @@ export const list = (q?: string, limit: number = -1, offset: number = -1, user: 
   // prettier-ignore
   {
     const where: string[] = [];
-    if (q) { where.push(`description LIKE ?`); buf.push(`%${q}%`); }
+    if (q) { where.push(`lower(title) LIKE lower(?)`); buf.push(`%${q}%`); }
     if (user > 0) { where.push(`user_id = ?`); buf.push(user); }
     if (where.length) { query += ` WHERE ${where.join("AND")}`; }
     if (limit > 0) { query += ` LIMIT ?`; buf.push(limit); }
