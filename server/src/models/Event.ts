@@ -1,10 +1,10 @@
-import model from "./model";
+import model from "../utils/model";
 
 export const EVENT_TYPES = ["reserved", "cancelled"] as const;
 
 export type EventType = (typeof EVENT_TYPES)[number];
 
-const Event = model("event_log", {
+const events = model("event_log", {
   id: "pkey",
   event: "string",
   user_id: "number",
@@ -19,14 +19,14 @@ const Event = model("event_log", {
  * the user that initiated the cancel.
  */
 export function create(event: EventType, postId: number, userId: number, actorId: number) {
-  return Event.createRaw({ event, post_id: postId, user_id: userId, actor_id: actorId });
+  return events.create({ event, post_id: postId, user_id: userId, actor_id: actorId });
 }
 
 /** Get all relevant events for a user in chronological order */
 export function inboxFor(userId: number) {
-  return Event.queryMany(
+  return events.queryMany(
     `
-      SELECT * from ${Event.table}
+      SELECT * from ${events.table}
       WHERE user_id = ?
       ORDER BY created_at ASC`,
     [userId]
@@ -34,5 +34,5 @@ export function inboxFor(userId: number) {
 }
 
 export function deleteAll() {
-  return Event.deleteAll();
+  return events.deleteAll();
 }

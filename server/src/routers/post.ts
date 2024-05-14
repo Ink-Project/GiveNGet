@@ -1,20 +1,33 @@
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
 import { isAuthorized } from "../utils/auth";
-import Post from "../models/Post";
+import * as Post from "../models/Post";
 import { checkAuthentication } from "./user";
+import createValidator from "../utils/validator";
 
 const postRouter: express.Router = express.Router();
 
-//controller provided as a callback function directly to the router
+const validatePostCreate = createValidator({
+  title: "string",
+  description: "string",
+  location: "string",
+  images: "string[]",
+  pickup_times: "string[]",
+});
 
-// no need for "posts/"
 postRouter.post("/", checkAuthentication, async (req, res) => {
-  const { title, description, location, images, pickup_times } = req.body;
+  const data = validatePostCreate(req.body);
+  if (!data) {
+    return res.send(400);
+  }
 
-  const userId = req.session!.userId;
-
-  const post = await Post.create(userId, title, description, location, images, pickup_times);
-  res.send(post);
+  res.send(await Post.create(
+    req.session!.userId,
+    data.title,
+    data.description,
+    data.location,
+    data.images,
+    data.pickup_times.map((time) => new Date(time)).filter(date => !isNaN(date.getDate()))
+  ));
 });
 
 postRouter.get("/", async (req, res) => {
@@ -49,7 +62,7 @@ postRouter.patch("/:id", checkAuthentication, async (req, res) => {
     return res.sendStatus(404);
   }
 
-  const updated = post.update(req.body.title, req.body.description, req.body.location);
+  const updated = Post.update(post, req.body.title, req.body.description, req.body.location);
   if (!updated) {
     return res.sendStatus(501);
   }

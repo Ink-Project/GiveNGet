@@ -1,7 +1,7 @@
 import * as Event from "../../models/Event";
-import Post from "../../models/Post";
-import Reservation from "../../models/Reservation";
-import User from "../../models/User";
+import * as Post from "../../models/Post";
+import * as Reservation from "../../models/Reservation";
+import * as User from "../../models/User";
 
 export const seed = async () => {
   await Event.deleteAll();
@@ -14,7 +14,7 @@ export const seed = async () => {
   const wowow = (await User.create("wowow", "1234"))!;
 
   const first = await Post.create(
-    cool_cat.data.id,
+    cool_cat.id,
     "First Post",
     "This is my first post. Here is a PS5 if anyone needs it",
     "Brooklyn",
@@ -23,7 +23,7 @@ export const seed = async () => {
   );
 
   await Post.create(
-    cool_cat.data.id,
+    cool_cat.id,
     "Second Post",
     "I am a software developer. I need to sell this laptop",
     "Brooklyn",
@@ -32,7 +32,7 @@ export const seed = async () => {
   );
 
   await Post.create(
-    cool_cat.data.id,
+    cool_cat.id,
     "Third Post",
     "How do you knw youre not in the matrix!?!? #StayWoke. Also here a gift if anyone wants it",
     "Brooklyn",
@@ -42,8 +42,8 @@ export const seed = async () => {
     [new Date()]
   );
 
-  let [rev] = await Reservation.byPost(first.data.id);
-  rev = (await rev.select(leet_guy.data.id))!;
-  rev = (await rev.cancel(leet_guy.data.id, leet_guy.data.id))!;
-  rev = (await rev.select(wowow.data.id))!;
+  let [rev] = await Reservation.byPost(first!.id);
+  rev = await Reservation.select(rev!, first!.user_id, leet_guy.id);
+  rev = await Reservation.cancel(rev!, first!.user_id, leet_guy.id);
+  rev = await Reservation.select(rev!, first!.user_id, wowow.id);
 };

@@ -1,7 +1,9 @@
-import model from "./model";
-import Reservation from "./Reservation";
+import model, { RowType } from "../utils/model";
+import * as Reservation from "./Reservation";
 
-export default class Post extends model("posts", {
+export type Post = RowType<typeof posts>;
+
+const posts = model("posts", {
   id: "pkey",
   title: "string",
   description: "string",
@@ -9,83 +11,61 @@ export default class Post extends model("posts", {
   user_id: "number",
   created_at: "timestamp",
   updated_at: "timestamp",
-}) {
-  private static must(data?: typeof Post.prototype.data) {
-    if (!data) {
-      // TODO
-      throw new Error(`Validation failed for data: ${data}`);
-    }
+});
 
-    return new Post(data);
+/**
+ * @param images Must be the URLs to the images on our server, not the urls/blobs given by the user
+ */
+export const create = async (
+  creatorId: number,
+  title: string,
+  description: string,
+  location: string,
+  images: string[],
+  pickup_times: Date[]
+) => {
+  const post = await posts.create({ title, description, location, user_id: creatorId });
+  if (!post) {
+    return;
   }
 
-  /**
-   * @param images Must be the URLs to the images on our server, not the urls/blobs given by the user
-   */
-  static async create(
-    creatorId: number,
-    title: string,
-    description: string,
-    location: string,
-    images: string[],
-    pickup_times: Date[]
-  ) {
-    const post = Post.must(
-      await Post.createRaw({
-        title,
-        description,
-        location,
-        user_id: creatorId,
-      })
-    );
-
-    // TODO: use one query to add all at the same time
-    for (const image of images) {
-      Image.create(image, post.data.id);
-    }
-
-    for (const time of pickup_times) {
-      Reservation.create(time, post.data.id);
-    }
-
-    return post;
+  // TODO: use one query to add all at the same time
+  for (const image of images) {
+    Image.create(image, post.id);
   }
 
-  static async list() {
-    return (await Post.listRaw()).map(Post.must);
+  for (const time of pickup_times) {
+    Reservation.create(time, post.id);
   }
 
-  static async find(id: number) {
-    const data = await Post.findBy("id", id);
-    return data ? new Post(data) : undefined;
-  }
+  return post;
+};
 
-  async update(title: string, description: string, location: string) {
-    return Post.must(await this.updateRaw({ title, description, location }));
-  }
+export const list = () => posts.list();
 
-  static async deleteAll() {
-    await Image.deleteAll();
-    await super.deleteAll();
-  }
-}
+export const find = (id: number) => posts.findBy("id", id);
 
-namespace Image {
-  class Image extends model("images", {
+export const update = (self: Post, title: string, description: string, location: string) => {
+  return posts.update(self, { title, description, location });
+};
+
+export const deleteAll = async () => {
+  await Image.deleteAll();
+  await posts.deleteAll();
+};
+
+export namespace Image {
+  const images = model("images", {
     id: "pkey",
     url: "string",
     post_id: "number",
-  }) {}
+  });
 
-  export function create(url: string, postId: number) {
-    return Image.createRaw({ url, post_id: postId });
-  }
+  export const create = (url: string, postId: number) => images.create({ url, post_id: postId });
 
-  export function findAllPostImages(postId: number) {
-    return Image.queryMany(`SELECT * from ${Image.table} WHERE post_id = ?`, postId);
-  }
+  export const byPost = (postId: number) => {
+    return images.queryMany(`SELECT * from ${images.table} WHERE post_id = ?`, postId);
+  };
 
-  export function deleteAll() {
-    return Image.deleteAll();
-  }
+  export const deleteAll = () => images.deleteAll();
 }
