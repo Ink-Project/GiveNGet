@@ -41,7 +41,23 @@ export const create = async (
   return post;
 };
 
-export const list = () => posts.list();
+export const list = (q?: string, limit: number = -1, offset: number = -1, user: number = -1) => {
+  // There are other, better ways to do pagination but this is simple
+  let query = `SELECT * from ${posts.table}`;
+  const buf: (string | number)[] = [];
+
+  // prettier-ignore
+  {
+    const where: string[] = [];
+    if (q) { where.push(`description LIKE ?`); buf.push(`%${q}%`); }
+    if (user > 0) { where.push(`user_id = ?`); buf.push(user); }
+    if (where.length) { query += ` WHERE ${where.join("AND")}`; }
+    if (limit > 0) { query += ` LIMIT ?`; buf.push(limit); }
+    if (offset > 0) { query += ` OFFSET ?`; buf.push(offset); }
+  }
+
+  return posts.queryMany(query, buf);
+};
 
 export const find = (id: number) => posts.findBy("id", id);
 
@@ -63,8 +79,9 @@ export namespace Image {
 
   export const create = (url: string, postId: number) => images.create({ url, post_id: postId });
 
-  export const byPost = (postId: number) => {
-    return images.queryMany(`SELECT * from ${images.table} WHERE post_id = ?`, postId);
+  export const byPost = async (postId: number) => {
+    const res = await images.raw(`SELECT url from ${images.table} WHERE post_id = ?`, postId);
+    return res.map(r => (r as any).url); // TODO: validate?
   };
 
   export const deleteAll = () => images.deleteAll();
