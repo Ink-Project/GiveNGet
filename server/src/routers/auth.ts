@@ -1,5 +1,6 @@
 import express from "express";
-import User from "../models/User";
+import * as User from "../models/User";
+import { isValidPassword } from "../utils/auth";
 
 const authRouter: express.Router = express.Router();
 
@@ -24,11 +25,11 @@ authRouter.post("/login", async (req, res) => {
     return res.sendStatus(404);
   }
 
-  if (!await user.isValidPassword(password)) {
+  if (!await isValidPassword(user.password, password)) {
     return res.sendStatus(401);
   }
 
-  req.session!.userId = user.data.id;
+  req.session!.userId = user.id;
   res.send(user);
 });
 
