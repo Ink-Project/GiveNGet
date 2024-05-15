@@ -1,4 +1,4 @@
-import { fetchHandler, getPostOptions } from "../utils";
+import { fetchHandler, getPostOptions } from "../utils/utils";
 
 /** Base URL for user API endpoints */
 const baseUrl = "/api/v1/users";
