@@ -1,6 +1,6 @@
 import type { Knex } from "knex";
 
-export async function up(knex: Knex): Promise<void> {
+export const up = (knex: Knex) => {
   return knex.schema.createTable("reservation", (table) => {
     table.increments("id").primary();
     table.dateTime("pickup_time").notNullable();

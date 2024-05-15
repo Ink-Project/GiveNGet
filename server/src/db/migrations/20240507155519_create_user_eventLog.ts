@@ -1,6 +1,6 @@
 import type { Knex } from "knex";
 
-export async function up(knex: Knex): Promise<void> {
+export const up = (knex: Knex) => {
   return knex.schema.createTable("event_log", (table) => {
     table.increments("id").primary();
     table.enum("event", ["reserved", "created", "cancelled"]);
@@ -10,6 +10,6 @@ export async function up(knex: Knex): Promise<void> {
     table.foreign("post_id").references("id").inTable("posts");
     table.timestamps(true, true);
   });
-}
+};
 
 export const down = (knex: Knex) => knex.schema.dropTable("event_log");

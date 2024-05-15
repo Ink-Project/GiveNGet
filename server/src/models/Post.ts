@@ -70,6 +70,7 @@ export const deleteAll = async () => {
   await posts.deleteAll();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Image {
   const images = model("images", {
     id: "pkey",
@@ -81,7 +82,7 @@ export namespace Image {
 
   export const byPost = async (postId: number) => {
     const res = await images.raw(`SELECT url from ${images.table} WHERE post_id = ?`, postId);
-    return res.map(r => (r as any).url); // TODO: validate?
+    return res.map(r => (r as { url: string }).url); // TODO: validate?
   };
 
   export const deleteAll = () => images.deleteAll();

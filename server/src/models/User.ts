@@ -13,7 +13,8 @@ const users = model(
     updated_at: "timestamp",
   },
   (data) => {
-    (data as any).toJSON = function () {
+    // @ts-expect-error 2339
+    data.toJSON = function () {
       return { ...this, password: undefined, updated_at: undefined };
     };
     return data;
