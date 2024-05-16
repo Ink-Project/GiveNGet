@@ -1,6 +1,31 @@
 import { Knex } from "knex";
 import knex from "../db/knex";
-import createValidator, { VType, VTypeMap } from "./validator";
+
+/**
+ * This type defines the types the schema is capable of verifying, in the form <name>: <JS type>.
+ * Some types correspond to the same JS type, but may have different validation requirements or
+ * special purposes (ex. the 'pkey' type, of which there must be EXACTLY one in a schema).
+ *
+ * These types do not directly correspond to Postgres types. For example, the `timestamp` and
+ * `datetime` entries will validate any date, the only difference is that `timestamp`s are not
+ * required when calling `createRaw` or `updateRaw`.
+ *
+ * To add support for a new type to the validator, add it to the type below, then add a validator
+ * function that can verify a value of an unknown type to the correct JS type.
+ */
+export type VTypeMap = {
+  string: string;
+  "string[]": string[];
+  "number[]": number[];
+  number: number;
+  timestamp: Date;
+  datetime: Date;
+  pkey: number;
+
+  n_number: number | null;
+};
+
+export type VType = keyof VTypeMap;
 
 type RemoveNever<T> = {
   [K in { [K in keyof T]: T[K] extends never ? never : K }[keyof T]]: T[K];
@@ -44,8 +69,6 @@ export default function model<S extends Record<string, VType>, T>(
     throw new Error("Must have exactly one primary key");
   }
 
-  const validate = createValidator(schema);
-
   return {
     table,
 
@@ -53,9 +76,8 @@ export default function model<S extends Record<string, VType>, T>(
      * Validate a row returned from a sql query against the schema
      * @returns data if validated correctly, undefined otherwise
      */
-    fromTableRow(row: unknown): FromRowOutput | undefined {
-      const data = validate(row);
-      return (transform && data ? transform(data) : data) as FromRowOutput | undefined;
+    fromTableRow(data: unknown): FromRowOutput | undefined {
+      return (transform && data ? transform(data as Data) : data) as FromRowOutput | undefined;
     },
 
     async raw(sql: string, binding: Knex.RawBinding) {

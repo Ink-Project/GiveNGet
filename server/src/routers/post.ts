@@ -2,22 +2,29 @@ import express from "express";
 import { isAuthorized } from "../utils/auth";
 import { Post, Reservation } from "../models";
 import { checkAuthentication } from "./user";
-import createValidator from "../utils/validator";
+import { z } from "zod";
 
 const postRouter: express.Router = express.Router();
 
-const validatePostCreate = createValidator({
-  title: "string",
-  description: "string",
-  location: "string",
-  images: "string[]",
-  pickup_times: "string[]",
+const postCreate = z.object({
+  title: z.string(),
+  description: z.string(),
+  location: z.string(),
+  images: z.string().url().array(),
+  pickup_times: z.coerce.date().array(),
 });
 
-const validatePostUpdate = createValidator({
-  title: "string",
-  description: "string",
-  location: "string",
+const postGet = z.object({
+  q: z.string().optional(),
+  limit: z.number().optional(),
+  offset: z.number().min(0).optional(),
+  user: z.number().min(1).optional(),
+});
+
+const postUpdate = z.object({
+  title: z.string(),
+  description: z.string(),
+  location: z.string(),
 });
 
 const getAuxPostInfo = async (post?: Post.Post): Promise<Post.PostWithInfo | undefined> => {
@@ -31,18 +38,18 @@ const getAuxPostInfo = async (post?: Post.Post): Promise<Post.PostWithInfo | und
 };
 
 postRouter.post("/", checkAuthentication, async (req, res) => {
-  const data = validatePostCreate(req.body);
-  if (!data) {
-    return res.sendStatus(400);
+  const body = await postCreate.safeParseAsync(req.body);
+  if (!body.success) {
+    return res.status(400).json(body.error.issues);
   }
 
   const post = await Post.create(
     req.session!.userId,
-    data.title,
-    data.description,
-    data.location,
-    data.images,
-    data.pickup_times.map((time) => new Date(time)).filter((date) => !isNaN(date.getDate()))
+    body.data.title,
+    body.data.description,
+    body.data.location,
+    body.data.images,
+    body.data.pickup_times
   );
   if (!post) {
     return res.sendStatus(500);
@@ -52,13 +59,13 @@ postRouter.post("/", checkAuthentication, async (req, res) => {
 });
 
 postRouter.get("/", async (req, res) => {
-  const { q, limit, offset, user } = req.query;
-  const posts = await Post.list(
-    typeof q === "string" ? q : undefined,
-    limit ? +limit : -1,
-    offset ? +offset : -1,
-    user ? +user : -1
-  );
+  const query = await postGet.safeParseAsync(req.query);
+  if (!query.success) {
+    return res.status(400).json(query.error.issues);
+  }
+
+  const { q, limit, offset, user } = query.data;
+  const posts = await Post.list(q, limit ?? -1, offset ?? -1, user ?? -1);
   res.send(await Promise.all(posts.map(getAuxPostInfo)));
 });
 
@@ -77,8 +84,8 @@ postRouter.get("/:id", async (req, res) => {
 });
 
 postRouter.patch("/:id", checkAuthentication, async (req, res) => {
-  const data = validatePostUpdate(req.body);
-  if (!data) {
+  const body = await postUpdate.safeParseAsync(req.body);
+  if (!body.success) {
     return res.sendStatus(400);
   }
 
@@ -94,7 +101,8 @@ postRouter.patch("/:id", checkAuthentication, async (req, res) => {
     return res.sendStatus(403);
   }
 
-  const updated = await Post.update(post, data.title, data.description, data.location);
+  const { title, description, location } = body.data;
+  const updated = await Post.update(post, title, description, location);
   if (!updated) {
     return res.sendStatus(501);
   }

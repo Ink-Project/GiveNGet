@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import { isAuthorized } from "../utils/auth";
 import { User } from "../models";
-import createValidator from "../utils/validator";
+import { z } from "zod";
 
 // Is the user logged in? Not specific user, just ANY user
 export const checkAuthentication = (req: Request, res: Response, next: NextFunction) => {
@@ -14,19 +14,19 @@ export const checkAuthentication = (req: Request, res: Response, next: NextFunct
 
 const userRouter: express.Router = express.Router();
 
-const validateUserCreate = createValidator({
-  username: "string",
-  password: "string",
+const userCreate = z.object({
+  username: z.string(),
+  password: z.string(),
 });
 
 userRouter.post("/", async (req, res) => {
-  const data = validateUserCreate(req.body);
-  if (!data) {
-    return res.send(400);
+  const body = await userCreate.safeParseAsync(req.body);
+  if (!body.success) {
+    return res.send(400).json(body.error.issues);
   }
 
   // TODO: check if username is taken, and if it is what should you return?
-  const user = await User.create(data.username, data.password);
+  const user = await User.create(body.data.username, body.data.password);
   req.session!.userId = user!.id; // TODO: no !
 
   res.send(user);

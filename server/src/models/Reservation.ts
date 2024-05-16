@@ -1,6 +1,6 @@
 import { Event } from "../models";
 import model, { RowType } from "../utils/model";
-import createValidator from "../utils/validator";
+import { z } from "zod";
 
 export type Reservation = RowType<typeof rsvs>;
 
@@ -11,13 +11,13 @@ const rsvs = model("reservation", {
   post_id: "number",
 });
 
-const validateForPost = createValidator({
-  id: "number",
-  pickup_time: "datetime",
-  user_id: "n_number",
+const post = z.object({
+  id: z.number(),
+  pickup_time: z.date(),
+  user_id: z.number().nullable(),
 });
 
-export const clientFilter = (data: ReturnType<typeof validateForPost>[]) => {
+export const clientFilter = (data: (z.infer<typeof post> | undefined)[]) => {
   return data
     .filter((data) => !!data)
     .map((data) => ({ id: data!.id, pickup_time: data!.pickup_time, free: !data!.user_id }));
@@ -42,7 +42,7 @@ export const byPostForClient = async (postId: number) => {
     `SELECT id, pickup_time, user_id from ${rsvs.table} WHERE post_id = ?`,
     [postId]
   );
-  return clientFilter(rows.map(validateForPost));
+  return clientFilter(rows.map(r => post.safeParse(r).data));
 };
 
 export const find = (id: number) => rsvs.findBy("id", id);
