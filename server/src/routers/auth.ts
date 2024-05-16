@@ -1,6 +1,5 @@
 import express from "express";
-import * as User from "../models/User";
-import * as Event from "../models/Event";
+import { Event, User } from "../models";
 import { isValidPassword } from "../utils/auth";
 import { checkAuthentication } from "./user";
 

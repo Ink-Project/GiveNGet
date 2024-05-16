@@ -1,6 +1,6 @@
 import { processImage } from "../utils/image";
 import model, { RowType } from "../utils/model";
-import * as Reservation from "./Reservation";
+import { Reservation } from "../models";
 
 export type Post = RowType<typeof posts>;
 

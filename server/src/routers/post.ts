@@ -1,7 +1,6 @@
 import express from "express";
 import { isAuthorized } from "../utils/auth";
-import * as Post from "../models/Post";
-import * as Reservation from "../models/Reservation";
+import { Post, Reservation } from "../models";
 import { checkAuthentication } from "./user";
 import createValidator from "../utils/validator";
 

@@ -1,4 +1,4 @@
-import * as Event from "./Event";
+import { Event } from "../models";
 import model, { RowType } from "../utils/model";
 import createValidator from "../utils/validator";
 

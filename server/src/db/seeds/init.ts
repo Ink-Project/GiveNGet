@@ -1,7 +1,4 @@
-import * as Event from "../../models/Event";
-import * as Post from "../../models/Post";
-import * as Reservation from "../../models/Reservation";
-import * as User from "../../models/User";
+import { Event, Post, Reservation, User } from "../../models";
 
 export const seed = async () => {
   await Event.deleteAll();

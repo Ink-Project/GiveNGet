@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import { isAuthorized } from "../utils/auth";
-import * as User from "../models/User";
+import { User } from "../models";
 import createValidator from "../utils/validator";
 
 // Is the user logged in? Not specific user, just ANY user

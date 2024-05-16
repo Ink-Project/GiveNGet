@@ -1,7 +1,6 @@
 import express from "express";
-import * as Reservation from "../models/Reservation";
+import { Post, Reservation } from "../models";
 import { checkAuthentication } from "./user";
-import * as Post from "../models/Post";
 
 const resvRouter: express.Router = express.Router();
 
