@@ -1,6 +1,60 @@
+import CurrentUserContext from "../context/CurrentUserContext";
+import { fetchHandler } from "../utils/utils";
+import { Navigate } from "react-router-dom";
+import { useContext, useState, useEffect } from "react";
+import { Container, Table } from "react-bootstrap";
+
+
 const Inbox = () => {
+
+  // Making sure that a user is logged in
+  const { currentUser } = useContext(CurrentUserContext);
+  if (!currentUser) return <Navigate to="/login" />;
+
+  const [reservations, setReservations] = useState([]);
+
+  const fetchResevation = async () => {
+    const [data, error] = await fetchHandler("/api/v1/inbox");
+    if (!error) {
+      setReservations(data);
+    }
+  }
+
+  useEffect(() => {
+    fetchResevation();
+    console.log(reservations);
+  }, []);
+
   return (
-    <div>
+    <>
+    <h1>Inbox</h1>
+    <Container>
+      <Table className="mt-4">
+      <thead className="table-dark">
+    <tr>
+      <th scope="col">Post_Id</th>
+      <th scope="col"></th>
+      <th scope="col">Confirmation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+    </tr>
+  </tbody>
+      </Table>
+    </Container>
+    </>
+  )
+};
+
+export default Inbox;
+
+
+/* 
+ <div>
       <p>Your Inbox lies here</p>
       <table className="table">
         <thead>
@@ -29,7 +83,5 @@ const Inbox = () => {
         </tbody>
       </table>
     </div>
-  );
-};
 
-export default Inbox;
+*/

@@ -1,26 +1,21 @@
 import { Container, Row, Card, Modal, Col, Carousel, Form } from "react-bootstrap";
-import CurrentUserContext from "../context/CurrentUserContext";
-import { useState, useEffect, useContext } from "react";
-import { fetchHandler } from "../utils/utils";
-import { Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { fetchHandler, getPostOptions } from "../utils/utils";
 import { Post } from "../utils/TypeProps";
 
 const Posts = () => {
-  // Making sure that a user is logged in
-  // const { currentUser } = useContext(CurrentUserContext);
-  // if (!currentUser) return <Navigate to="/login" />;
 
   const [posts, setPosts] = useState<Post[][]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const data = await fetchHandler(`/api/v1/posts?q=${searchTerm}`);
-      setPosts(data);
-    };
+  const fetchPosts = async () => {
+    const data = await fetchHandler(`/api/v1/posts?q=${searchTerm}`);
+    setPosts(data);
+  };
 
+  useEffect(() => {
     fetchPosts();
   }, [searchTerm]);
 
@@ -35,10 +30,20 @@ const Posts = () => {
     setSearchTerm(event.target.value);
   };
 
+  // Function to handle reservation button click
+  const handleReservation = async (
+    event: React.FormEvent<HTMLFormElement>,
+    reservationId: number
+  ) => {
+    event.preventDefault();
+
+    await fetchHandler(`/api/v1/reservations/${reservationId}/select`, getPostOptions({}));
+    fetchPosts();
+  };
+
   return (
     <>
       <h1>Posts</h1>
-
       <Container className="search mt-4">
         <Form>
           <div className="form-floating">
@@ -106,36 +111,35 @@ const Posts = () => {
 
               <Col>
                 <p>Description: {selectedPost?.description}</p>
-                {selectedPost?.reservations.some((reservation) => reservation.free) && (
-                  <>
-                    <p>Pickup Time: </p>
-                    {selectedPost?.reservations.map((reservation, index) => (
-                      <button key={index} className="reservationBtn">
+                <div className="d-flex flex-wrap">
+                {selectedPost?.reservations
+                  .filter((reservation) => reservation.free)
+                  .map((reservation, index) => (
+                    <form
+                      key={index}
+                      className="reservationForm"
+                      onSubmit={(event) => handleReservation(event, reservation.id)}
+                    >
+                      <button type="submit" className="reservationBtn">
                         {new Date(reservation.pickup_time).toLocaleString()}
                       </button>
-                    ))}
-                  </>
-                )}
-                <Row>
-                  <Col>
-
-                    <p>Location: {selectedPost?.location}</p>
-                    <p>User ID: {selectedPost?.user_id}</p>
-                  </Col>
-                </Row>
+                    </form>
+                  ))}
+                  </div>
+                <p>Location: {selectedPost?.location}</p>
+                <p>User ID: {selectedPost?.user_id}</p>
               </Col>
             </Row>
           </Container>
         </Modal.Body>
 
-        {selectedPost?.reservations.some((reservation) => reservation.free) ? (
-          <button className="btn btn-primary">Reserve</button>
-        ) : (
-          <button className="btn btn-primary" disabled>
-            Not Available
-          </button>
-        )}
-        
+        <Modal.Footer>
+          {selectedPost?.reservations.some((reservation) => reservation.free) ? (
+            <h4>Available</h4>
+          ) : (
+            <h4>Not Available</h4>
+          )}
+        </Modal.Footer>
       </Modal>
     </>
   );
