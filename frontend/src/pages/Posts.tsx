@@ -7,8 +7,8 @@ import { Post } from "../utils/TypeProps";
 
 const Posts = () => {
   // Making sure that a user is logged in
-  const { currentUser } = useContext(CurrentUserContext);
-  if (!currentUser) return <Navigate to="/login" />;
+  // const { currentUser } = useContext(CurrentUserContext);
+  // if (!currentUser) return <Navigate to="/login" />;
 
   const [posts, setPosts] = useState<Post[][]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);

@@ -31,7 +31,6 @@ export default function UserPage() {
  const [location, setLocation] = useState("")
  const [images, setImages] = useState<string[]>([])
  const [pickupTime, setPickupTime] = useState("")
- const [postFormData, setPostFormData] = useState({})
  const { id } = useParams()
 
 
@@ -83,13 +82,13 @@ export default function UserPage() {
 
  const handleNewPostSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault()
-  setPostFormData({
+  const postFormData = {
     "title": title,
     "description": description,
     "location": location,
     "images": images,
     "pickup_times": [pickupTime]
-  })
+  };
   console.log(postFormData)
   await fetchHandler('/api/v1/posts/', getPostOptions(postFormData));
   
@@ -226,7 +225,7 @@ function dragOverHandler(event:React.DragEvent) {
                  </Row>
                  <br />
                  <button>Submit Post</button>
-                 <div>{images.map(img => <img src={img} />)}</div>
+                 <div>{images.map((img, i) => <img src={img} key={i} />)}</div>
                </form>
            </Row>
          </Container>
