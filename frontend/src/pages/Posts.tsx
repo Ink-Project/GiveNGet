@@ -64,7 +64,7 @@ const Posts = () => {
                   <div className="col-md-3 mb-4" key={post.id}>
                     <Card onClick={() => handleCardClick(post)}>
                       <Card.Img
-                        src={post.images[0]} // Display the first image
+                        src={`${window.location.origin}${post.images[0]}`} // Display the first image
                         alt="Placeholder"
                         className="img-fluid w-100"
                         style={{ maxWidth: "100%", height: "15rem" }}
@@ -94,7 +94,7 @@ const Posts = () => {
                   {selectedPost?.images.map((image, index) => (
                     <Carousel.Item key={index}>
                       <img
-                        src={image}
+                        src={`${window.location.origin}${image}`}
                         alt={`Image ${index + 1}`}
                         className="img-fluid"
                         style={{ maxWidth: "100%", height: "15rem" }}
