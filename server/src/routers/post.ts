@@ -84,8 +84,7 @@ postRouter.patch("/:id", checkAuthentication, async (req, res) => {
     return res.sendStatus(400);
   }
 
-  const id = +req.params.id;
-  const post = await Post.find(id);
+  const post = await Post.find(+req.params.id);
   if (!post) {
     return res.sendStatus(404);
   }

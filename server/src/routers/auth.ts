@@ -1,6 +1,8 @@
 import express from "express";
 import * as User from "../models/User";
+import * as Event from "../models/Event";
 import { isValidPassword } from "../utils/auth";
+import { checkAuthentication } from "./user";
 
 const authRouter: express.Router = express.Router();
 
@@ -38,6 +40,11 @@ authRouter.post("/login", async (req, res) => {
 authRouter.delete("/logout", async (req, res) => {
   req.session = null;
   res.sendStatus(204);
+});
+
+authRouter.get("/inbox", checkAuthentication, async (req, res) => {
+  // TODO: pagination and order chronologically?
+  return res.send(await Event.inboxFor(req.session!.userId));
 });
 
 export default authRouter;
