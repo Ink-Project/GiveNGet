@@ -21,7 +21,7 @@ const validatePostUpdate = createValidator({
   location: "string",
 });
 
-const getAuxPostInfo = async (post?: Post.Post) => {
+const getAuxPostInfo = async (post?: Post.Post): Promise<Post.PostWithInfo | undefined> => {
   return post
     ? {
         ...post,
@@ -37,7 +37,6 @@ postRouter.post("/", checkAuthentication, async (req, res) => {
     return res.sendStatus(400);
   }
 
-  // TODO: problems with images
   const post = await Post.create(
     req.session!.userId,
     data.title,
