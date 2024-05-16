@@ -5,7 +5,8 @@ import Login from "./pages/Login";
 import SignUp from "./pages/Signup";
 import Inbox from "./pages/Inbox";
 import Landing from "./pages/Landing";
-import UsersPage from "./pages/User"
+import UsersPage from "./pages/User";
+import NotFoundPage from "./pages/NotFoundPage";
 import { Routes, Route } from "react-router-dom";
 
 function App() {
@@ -19,7 +20,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/inbox" element={<Inbox />} />
-        <Route path="*" element={<Landing />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );

@@ -1,14 +1,9 @@
 import { Container, Row, Card, Modal, Col, Carousel, Form } from "react-bootstrap";
-import CurrentUserContext from "../context/CurrentUserContext";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { fetchHandler, getPostOptions } from "../utils/utils";
-import { Navigate } from "react-router-dom";
 import { Post } from "../utils/TypeProps";
 
 const Posts = () => {
-  // Making sure that a user is logged in
-  const { currentUser } = useContext(CurrentUserContext);
-  if (!currentUser) return <Navigate to="/login" />;
 
   const [posts, setPosts] = useState<Post[][]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
@@ -140,7 +135,7 @@ const Posts = () => {
 
         <Modal.Footer>
           {selectedPost?.reservations.some((reservation) => reservation.free) ? (
-            <h4>Reserve</h4>
+            <h4>Available</h4>
           ) : (
             <h4>Not Available</h4>
           )}

@@ -25,11 +25,11 @@ const NavBar = () => {
           <img className="logo" src={logo} alt="Logo" height="60" width="100%" />
         </Navbar.Brand>
         <Nav className="ms-auto align-items-center">
-          {currentUser ? (
-            <>
-              <Nav.Link to="/posts" as={NavLink}>
+        <Nav.Link to="/posts" as={NavLink}>
                 Posts
               </Nav.Link>
+          {currentUser ? (
+            <>
               <Nav.Link to="/inbox" as={NavLink}>
                 Inbox
               </Nav.Link>
