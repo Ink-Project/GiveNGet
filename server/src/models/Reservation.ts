@@ -1,4 +1,4 @@
-import * as Event from "./Event";
+import { Event } from "../models";
 import model, { RowType } from "../utils/model";
 import createValidator from "../utils/validator";
 
@@ -17,8 +17,20 @@ const validateForPost = createValidator({
   user_id: "n_number",
 });
 
-export const create = (time: Date, postId: number) => {
-  return rsvs.create({ pickup_time: time, post_id: postId, user_id: null });
+export const clientFilter = (data: ReturnType<typeof validateForPost>[]) => {
+  return data
+    .filter((data) => !!data)
+    .map((data) => ({ id: data!.id, pickup_time: data!.pickup_time, free: !data!.user_id }));
+};
+
+export const create = (times: Date[], postId: number) => {
+  return rsvs.queryMany(
+    `
+    INSERT INTO ${rsvs.table} (post_id, pickup_time)
+    VALUES ${"(?, ?), ".repeat(times.length).slice(0, -2)}
+    RETURNING *`,
+    times.flatMap((time) => [postId, time])
+  );
 };
 
 export const byPost = (postId: number) => {
@@ -30,10 +42,7 @@ export const byPostForClient = async (postId: number) => {
     `SELECT id, pickup_time, user_id from ${rsvs.table} WHERE post_id = ?`,
     [postId]
   );
-  return rows.map(validateForPost).map((raw) => {
-    const data = validateForPost(raw);
-    return data ? { id: data.id, pickup_time: data.pickup_time, free: !data.user_id } : data;
-  });
+  return clientFilter(rows.map(validateForPost));
 };
 
 export const find = (id: number) => rsvs.findBy("id", id);

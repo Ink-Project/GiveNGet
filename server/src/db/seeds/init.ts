@@ -1,7 +1,4 @@
-import * as Event from "../../models/Event";
-import * as Post from "../../models/Post";
-import * as Reservation from "../../models/Reservation";
-import * as User from "../../models/User";
+import { Event, Post, Reservation, User } from "../../models";
 
 export const seed = async () => {
   await Event.deleteAll();
@@ -18,7 +15,11 @@ export const seed = async () => {
     "First Post",
     "This is my first post. Here is a PS5 if anyone needs it",
     "Brooklyn",
-    ["https://cdn.mos.cms.futurecdn.net/HkdMToxijoHfz4JwUgfh3G.jpg", "https://images.pushsquare.com/af8bd4f21bd6c/ps5-photo.large.jpg", "https://awsimages.detik.net.id/community/media/visual/2020/09/24/ps5.jpeg?w=600&q=90"],
+    [
+      "https://cdn.mos.cms.futurecdn.net/HkdMToxijoHfz4JwUgfh3G.jpg",
+      "https://images.pushsquare.com/af8bd4f21bd6c/ps5-photo.large.jpg",
+      "https://awsimages.detik.net.id/community/media/visual/2020/09/24/ps5.jpeg?w=600&q=90",
+    ],
     [new Date()]
   );
 
@@ -27,7 +28,12 @@ export const seed = async () => {
     "Second Post",
     "I am a software developer who no longer needs this laptop",
     "Brooklyn",
-    ["https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6550/6550428_sd.jpg", "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6550/6550428ld.jpg","https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6550/6550428cv7d.jpg", "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6550/6550428cv10d.jpg"],
+    [
+      "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6550/6550428_sd.jpg",
+      "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6550/6550428ld.jpg",
+      "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6550/6550428cv7d.jpg",
+      "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6550/6550428cv10d.jpg",
+    ],
     [new Date(), new Date(), new Date()]
   );
 
@@ -45,5 +51,5 @@ export const seed = async () => {
   let [rev] = await Reservation.byPost(first!.id);
   rev = await Reservation.select(rev!, first!.user_id, leet_guy.id);
   rev = await Reservation.cancel(rev!, first!.user_id, leet_guy.id);
-  rev = await Reservation.select(rev!, first!.user_id, wowow.id);
+  await Reservation.select(rev!, first!.user_id, wowow.id);
 };

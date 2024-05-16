@@ -1,7 +1,13 @@
+import { processImage } from "../utils/image";
 import model, { RowType } from "../utils/model";
-import * as Reservation from "./Reservation";
+import { Reservation } from "../models";
 
 export type Post = RowType<typeof posts>;
+
+export type PostWithInfo = Post & {
+  images: string[];
+  reservations: ReturnType<typeof Reservation.clientFilter>;
+};
 
 const posts = model("posts", {
   id: "pkey",
@@ -13,9 +19,6 @@ const posts = model("posts", {
   updated_at: "timestamp",
 });
 
-/**
- * @param images Must be the URLs to the images on our server, not the urls/blobs given by the user
- */
 export const create = async (
   creatorId: number,
   title: string,
@@ -23,22 +26,31 @@ export const create = async (
   location: string,
   images: string[],
   pickup_times: Date[]
-) => {
+): Promise<PostWithInfo | undefined> => {
   const post = await posts.create({ title, description, location, user_id: creatorId });
   if (!post) {
     return;
   }
 
+  const resImages: string[] = [];
   // TODO: use one query to add all at the same time
-  for (const image of images) {
-    Image.create(image, post.id);
+  for (const image of await Promise.allSettled(images.map(processImage))) {
+    if (image.status === "fulfilled") {
+      const res = await Image.create(image.value, post.id);
+      if (res) {
+        resImages.push(res.url);
+      }
+    } else {
+      // TODO: maybe indicate in the response somehow if images fail to be uploaded
+      console.log(`Image process error: ${image.reason}`);
+    }
   }
 
-  for (const time of pickup_times) {
-    Reservation.create(time, post.id);
-  }
-
-  return post;
+  return {
+    ...post,
+    images: resImages,
+    reservations: Reservation.clientFilter(await Reservation.create(pickup_times, post.id)),
+  };
 };
 
 export const list = (q?: string, limit: number = -1, offset: number = -1, user: number = -1) => {
@@ -70,6 +82,7 @@ export const deleteAll = async () => {
   await posts.deleteAll();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Image {
   const images = model("images", {
     id: "pkey",
@@ -81,7 +94,7 @@ export namespace Image {
 
   export const byPost = async (postId: number) => {
     const res = await images.raw(`SELECT url from ${images.table} WHERE post_id = ?`, postId);
-    return res.map(r => (r as any).url); // TODO: validate?
+    return res.map((r) => (r as { url: string }).url); // TODO: validate?
   };
 
   export const deleteAll = () => images.deleteAll();

@@ -1,7 +1,6 @@
 import express from "express";
 import { isAuthorized } from "../utils/auth";
-import * as Post from "../models/Post";
-import * as Reservation from "../models/Reservation";
+import { Post, Reservation } from "../models";
 import { checkAuthentication } from "./user";
 import createValidator from "../utils/validator";
 
@@ -21,7 +20,7 @@ const validatePostUpdate = createValidator({
   location: "string",
 });
 
-const getAuxPostInfo = async (post?: Post.Post) => {
+const getAuxPostInfo = async (post?: Post.Post): Promise<Post.PostWithInfo | undefined> => {
   return post
     ? {
         ...post,
@@ -37,7 +36,6 @@ postRouter.post("/", checkAuthentication, async (req, res) => {
     return res.sendStatus(400);
   }
 
-  // TODO: problems with images
   const post = await Post.create(
     req.session!.userId,
     data.title,
@@ -84,8 +82,7 @@ postRouter.patch("/:id", checkAuthentication, async (req, res) => {
     return res.sendStatus(400);
   }
 
-  const id = +req.params.id;
-  const post = await Post.find(id);
+  const post = await Post.find(+req.params.id);
   if (!post) {
     return res.sendStatus(404);
   }

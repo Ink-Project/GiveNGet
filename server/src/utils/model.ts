@@ -8,6 +8,7 @@ type RemoveNever<T> = {
 
 type DataFor<S extends Record<string, VType>> = { [P in keyof S]: VTypeMap[S[P]] };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RowType<T extends Record<string, any>> = Exclude<
   ReturnType<T["fromTableRow"]>,
   undefined
@@ -21,7 +22,7 @@ export type RowType<T extends Record<string, any>> = Exclude<
 export default function model<S extends Record<string, VType>, T>(
   table: string,
   schema: S,
-  transform?: (data: DataFor<S>) => T
+  transform?: (_data: DataFor<S>) => T
 ) {
   type FromRowOutput = T extends unknown ? DataFor<S> : T;
   type Data = DataFor<S>;

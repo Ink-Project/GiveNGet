@@ -1,0 +1,11 @@
+{
+    "eslint.workingDirectories": [ "./frontend", "./server" ],
+    "eslint.validate": ["typescript", "typescriptreact"],
+    // Dont mix TS errors and es-lint diagnostics, from https://github.com/microsoft/vscode-eslint/issues/1199
+    "eslint.rules.customizations": [
+        { "rule": "no-*", "severity": "info" },       // override all no-* rules to info
+        { "rule": "!no-*", "severity": "warn" },      // override all other (not no-*) rules to warn
+        { "rule": "*console*", "severity": "default" }, // reset all *console* rules to the original config
+        { "rule": "*syntax*", "severity": "downgrade" },     // reset all *syntax* rules to one lower than the original config
+    ]
+}

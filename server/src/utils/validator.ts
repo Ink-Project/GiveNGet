@@ -33,7 +33,7 @@ const validators = {
   n_number: (unk) => unk === null || typeof unk === "number",
   "string[]": (unk) => Array.isArray(unk) && unk.every((s) => typeof s === "string"),
   "number[]": (unk) => Array.isArray(unk) && unk.every((s) => typeof s === "number"),
-} satisfies Record<VType, (_: unknown) => any>;
+} satisfies Record<VType, (_: unknown) => unknown>;
 
 export default function createValidator<S extends Record<string, VType>>(schema: S) {
   type Data = { [P in keyof S]: VTypeMap[S[P]] };

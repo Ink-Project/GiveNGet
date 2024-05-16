@@ -6,7 +6,8 @@
   "scripts": {
     "check": "tsc --noEmit",
     "transpile": "swc ./src knexfile.ts -d dist",
-    "build": "npm run transpile && npm run migrate:rollback && npm run migrate && npm run seed",
+    "img_reset": "mkdir -p ./uploads && rm -rf ./uploads/*",
+    "build": "npm run img_reset && npm run transpile && npm run migrate:rollback && npm run migrate && npm run seed",
     "start": "node dist/src/index.js",
     "dev": "nodemon src/index.ts",
     "connect": "psql -U postgres -d react_auth_example",

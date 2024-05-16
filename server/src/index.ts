@@ -6,6 +6,7 @@ import userRouter from "./routers/user";
 import dotenv from "dotenv";
 import postRouter from "./routers/post";
 import resvRouter from "./routers/reservation";
+import { IMAGES_PATH, IMAGES_URL_PATH } from "./utils/image";
 
 dotenv.config();
 const app = express();
@@ -30,6 +31,7 @@ app.use((req, _res, next) => {
 }); // print information about each incoming request
 app.use(express.json()); // parse incoming request bodies as JSON
 app.use(express.static(path.join(__dirname, "../frontend/dist"))); // Serve static assets from the dist folder of the frontend
+app.use(IMAGES_URL_PATH, express.static(IMAGES_PATH));
 
 app.use("/api/v1", authRouter);
 app.use("/api/v1/users", userRouter);
