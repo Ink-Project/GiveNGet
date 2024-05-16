@@ -48,7 +48,7 @@ postRouter.post("/", checkAuthentication, async (req, res) => {
     return res.sendStatus(500);
   }
 
-  res.send(await getAuxPostInfo(post));
+  res.send(post);
 });
 
 postRouter.get("/", async (req, res) => {
