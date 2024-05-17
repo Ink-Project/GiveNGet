@@ -15,8 +15,8 @@ export const checkAuthentication = (req: Request, res: Response, next: NextFunct
 const userRouter: express.Router = express.Router();
 
 const userCreate = z.object({
-  username: z.string(),
-  password: z.string(),
+  username: z.string().max(255),
+  password: z.string().max(255),
 });
 
 userRouter.post("/", async (req, res) => {

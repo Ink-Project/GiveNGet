@@ -1,17 +1,19 @@
 import { hashPassword } from "../utils/auth";
 import model, { RowType } from "../utils/model";
+import { z } from "zod";
 
 export type User = RowType<typeof users>;
 
 const users = model(
   "users",
-  {
-    id: "pkey",
-    username: "string",
-    password: "string",
-    created_at: "timestamp",
-    updated_at: "timestamp",
-  },
+  "id",
+  z.object({
+    id: z.number().optional(),
+    username: z.string(),
+    password: z.string(),
+    created_at: z.date().optional(),
+    updated_at: z.date().optional(),
+  }),
   (data) => {
     // @ts-expect-error 2339
     data.toJSON = function () {

@@ -7,25 +7,21 @@ import { z } from "zod";
 const postRouter: express.Router = express.Router();
 
 const postCreate = z.object({
-  title: z.string(),
-  description: z.string(),
-  location: z.string(),
+  title: z.string().max(255),
+  description: z.string().max(255),
+  location: z.string().max(255),
   images: z.string().url().array(),
   pickup_times: z.coerce.date().array(),
 });
 
 const postGet = z.object({
   q: z.string().optional(),
-  limit: z.number().optional(),
-  offset: z.number().min(0).optional(),
-  user: z.number().min(1).optional(),
+  limit: z.coerce.number().optional(),
+  offset: z.coerce.number().min(0).optional(),
+  user: z.coerce.number().min(1).optional(),
 });
 
-const postUpdate = z.object({
-  title: z.string(),
-  description: z.string(),
-  location: z.string(),
-});
+const postUpdate = postCreate.omit({ images: true, pickup_times: true });
 
 const getAuxPostInfo = async (post?: Post.Post): Promise<Post.PostWithInfo | undefined> => {
   return post

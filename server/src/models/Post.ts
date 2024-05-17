@@ -1,6 +1,7 @@
 import { processImage } from "../utils/image";
 import model, { RowType } from "../utils/model";
 import { Reservation } from "../models";
+import { z } from "zod";
 
 export type Post = RowType<typeof posts>;
 
@@ -9,15 +10,15 @@ export type PostWithInfo = Post & {
   reservations: ReturnType<typeof Reservation.clientFilter>;
 };
 
-const posts = model("posts", {
-  id: "pkey",
-  title: "string",
-  description: "string",
-  location: "string",
-  user_id: "number",
-  created_at: "timestamp",
-  updated_at: "timestamp",
-});
+const posts = model("posts", "id", z.object({
+  id: z.number().optional(),
+  title: z.string(),
+  description: z.string(),
+  location: z.string(),
+  user_id: z.number(),
+  created_at: z.date().optional(),
+  updated_at: z.date().optional(),
+}));
 
 export const create = async (
   creatorId: number,
@@ -84,11 +85,11 @@ export const deleteAll = async () => {
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Image {
-  const images = model("images", {
-    id: "pkey",
-    url: "string",
-    post_id: "number",
-  });
+  const images = model("images", "id", z.object({
+    id: z.number().optional(),
+    url: z.string(),
+    post_id: z.number(),
+  }));
 
   export const create = (url: string, postId: number) => images.create({ url, post_id: postId });
 

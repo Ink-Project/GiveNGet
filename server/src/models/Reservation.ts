@@ -4,20 +4,16 @@ import { z } from "zod";
 
 export type Reservation = RowType<typeof rsvs>;
 
-const rsvs = model("reservation", {
-  id: "pkey",
-  pickup_time: "datetime",
-  user_id: "n_number",
-  post_id: "number",
-});
+type ClientReservation = Omit<Reservation, "post_id">;
 
-const post = z.object({
-  id: z.number(),
+const rsvs = model("reservation", "id", z.object({
+  id: z.number().optional(),
   pickup_time: z.date(),
   user_id: z.number().nullable(),
-});
+  post_id: z.number(),
+}));
 
-export const clientFilter = (data: (z.infer<typeof post> | undefined)[]) => {
+export const clientFilter = (data: (ClientReservation | undefined)[]) => {
   return data
     .filter((data) => !!data)
     .map((data) => ({ id: data!.id, pickup_time: data!.pickup_time, free: !data!.user_id }));
@@ -42,7 +38,7 @@ export const byPostForClient = async (postId: number) => {
     `SELECT id, pickup_time, user_id from ${rsvs.table} WHERE post_id = ?`,
     [postId]
   );
-  return clientFilter(rows.map(r => post.safeParse(r).data));
+  return clientFilter(rows as ClientReservation[]);
 };
 
 export const find = (id: number) => rsvs.findBy("id", id);
