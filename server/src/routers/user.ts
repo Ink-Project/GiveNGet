@@ -7,20 +7,26 @@ const userRouter: express.Router = express.Router();
 
 const userCreate = z.object({
   username: z.string().max(255),
-  password: z.string().max(255),
+  password: z.string().max(255).min(3),
 });
 
 userRouter.post("/", async (req, res) => {
   const body = await userCreate.safeParseAsync(req.body);
   if (!body.success) {
-    return res.send(400).json(body.error.issues);
+    return res.status(400).json(body.error.issues);
   }
 
-  // TODO: check if username is taken, and if it is what should you return?
-  const user = await User.create(body.data.username, body.data.password);
-  req.session!.userId = user!.id; // TODO: no !
+  try {
+    const user = await User.create(body.data.username, body.data.password);
+    if (!user) {
+      return res.sendStatus(500);
+    }
 
-  res.send(user);
+    req.session!.userId = user!.id; // TODO: no !
+    res.send(user);
+  } catch {
+    return res.sendStatus(409);
+  }
 });
 
 userRouter.get("/", async (_req, res) => {

@@ -32,15 +32,13 @@ authRouter.get("/me", async (req, res) => {
 authRouter.post("/login", async (req, res) => {
   const body = await userLogin.safeParseAsync(req.body);
   if (!body.success) {
-    return res.send(400).json(body.error.issues);
+    return res.status(400).json(body.error.issues);
   }
 
   const user = await User.findByUsername(body.data.username);
   if (!user) {
     return res.sendStatus(404);
-  }
-
-  if (!(await isValidPassword(body.data.password, user.password))) {
+  } else if (!await isValidPassword(body.data.password, user.password)) {
     return res.sendStatus(401);
   }
 

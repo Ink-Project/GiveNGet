@@ -13,10 +13,6 @@ export type RowType<M extends Model<any, any, any, any, any, any, any>> = Requir
 >;
 
 type Data<S extends z.ZodTypeAny> = Required<z.infer<S>>;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type FromRowOutput<F extends (...args: any) => any, S extends z.ZodTypeAny> = F extends unknown
-  ? Data<S>
-  : ReturnType<F>;
 
 export class Model<
   T extends z.ZodRawShape,
@@ -27,7 +23,7 @@ export class Model<
   S extends z.ZodObject<T, U, C, Output, I>,
   F extends (_data: Required<Output>) => unknown
 > {
-  readonly schema: ReturnType<S["required"]>;
+  private readonly schema: ReturnType<S["required"]>;
 
   constructor(
     public readonly table: string,
@@ -42,7 +38,7 @@ export class Model<
 
   fromTableRowUnchecked(data: unknown) {
     return (this.transform && data ? this.transform(data as Data<S>) : data) as
-      | FromRowOutput<F, S>
+      | (F extends unknown ? Data<S> : ReturnType<F>)
       | undefined;
   }
 
@@ -60,8 +56,7 @@ export class Model<
    * Validate a row returned from a sql query against the schema
    * @returns data if validated correctly, undefined otherwise
    */
-  fromTableRow =
-    process.env.DB_VALIDATION === "development" ? this.fromTableRowSafe : this.fromTableRowUnchecked;
+  fromTableRow = process.env.DB_VALIDATION ? this.fromTableRowSafe : this.fromTableRowUnchecked;
 
   /** Send a raw query to the database and return the rows */
   async raw(sql: string, binding: Knex.RawBinding) {
@@ -123,7 +118,7 @@ export class Model<
 }
 
 /**
- * @param table The Postgres table this model corresponds to
+ * @param table The DB table this model corresponds to
  * @param schema A zod schema describing the data types of the table. Optional fields are REQUIRED
  * in the returned rows, but are optional when creating or updating a row.
  * @returns An object with helper functions for making queries against `table`
