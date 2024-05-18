@@ -1,6 +1,6 @@
-import { hashPassword } from "../utils/auth";
-import model, { RowType } from "../utils/model";
 import { z } from "zod";
+import bcrypt from "bcrypt";
+import model, { RowType } from "../utils/model";
 
 export type User = RowType<typeof users>;
 
@@ -30,15 +30,13 @@ export const find = (id: number) => users.findBy("id", id);
 export const findByUsername = (username: string) => users.findBy("username", username);
 
 export const create = async (username: string, password: string) => {
-  const hashed = await hashPassword(password);
+  const hashed = await bcrypt.hash(password, 10).catch((err) => console.log(err.message));
   if (!hashed) {
     return;
   }
   return await users.create({ username, password: hashed });
 };
 
-export const update = async (user: User, username: string) => {
-  return await users.update(user, { username });
-};
+export const update = (user: User, username: string) => users.update(user, { username });
 
 export const deleteAll = () => users.deleteAll();

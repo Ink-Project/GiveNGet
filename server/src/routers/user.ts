@@ -1,16 +1,7 @@
-import express, { NextFunction, Request, Response } from "express";
-import { isAuthorized } from "../utils/auth";
-import { User } from "../models";
+import express from "express";
 import { z } from "zod";
-
-// Is the user logged in? Not specific user, just ANY user
-export const checkAuthentication = (req: Request, res: Response, next: NextFunction) => {
-  if (typeof req.session?.userId !== "number") {
-    return res.sendStatus(401);
-  }
-
-  return next();
-};
+import { checkAuthentication, isAuthorized } from "../utils/auth";
+import { User } from "../models";
 
 const userRouter: express.Router = express.Router();
 
@@ -32,8 +23,6 @@ userRouter.post("/", async (req, res) => {
   res.send(user);
 });
 
-// These actions require users to be logged in (authentication)
-// Express lets us pass a piece of middleware to run for a specific endpoint
 userRouter.get("/", async (_req, res) => {
   res.send(await User.list());
 });

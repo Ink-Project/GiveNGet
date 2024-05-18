@@ -1,8 +1,8 @@
 import express from "express";
-import { Event, User } from "../models";
-import { isValidPassword } from "../utils/auth";
-import { checkAuthentication } from "./user";
+import bcrypt from "bcrypt";
 import { z } from "zod";
+import { Event, User } from "../models";
+import { checkAuthentication } from "../utils/auth";
 
 const authRouter: express.Router = express.Router();
 
@@ -10,6 +10,10 @@ const userLogin = z.object({
   username: z.string().max(255),
   password: z.string().max(255),
 });
+
+/** Check if a given password matches a given hash, returns a bool, or undefined if error */
+const isValidPassword = async (plaintext: string, hash: string) =>
+  bcrypt.compare(plaintext, hash).catch((err) => console.error(err.message));
 
 // This controller returns 401 if the client is NOT logged in (doesn't have a cookie)
 // or returns the user based on the userId stored on the client's cookie
@@ -36,7 +40,7 @@ authRouter.post("/login", async (req, res) => {
     return res.sendStatus(404);
   }
 
-  if (!await isValidPassword(body.data.password, user.password)) {
+  if (!(await isValidPassword(body.data.password, user.password))) {
     return res.sendStatus(401);
   }
 

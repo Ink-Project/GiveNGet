@@ -1,8 +1,8 @@
 import express from "express";
+import { z } from "zod";
 import { isAuthorized } from "../utils/auth";
 import { Post, Reservation } from "../models";
-import { checkAuthentication } from "./user";
-import { z } from "zod";
+import { checkAuthentication } from "../utils/auth";
 
 const postRouter: express.Router = express.Router();
 
