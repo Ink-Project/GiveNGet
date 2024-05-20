@@ -1,16 +1,10 @@
 import { Event, Post, Reservation, User } from "../../models";
-import { existsSync, mkdirSync } from "fs";
-import { IMAGES_PATH } from "../../utils/image";
 
 export const seed = async () => {
   await Event.deleteAll();
   await Reservation.deleteAll();
   await Post.deleteAll();
   await User.deleteAll();
-
-  if (!existsSync(IMAGES_PATH)) {
-    mkdirSync(IMAGES_PATH);
-  }
 
   const cool_cat = (await User.create("cool_cat", "1234"))!;
   const leet_guy = (await User.create("l33t-guy", "1234"))!;
