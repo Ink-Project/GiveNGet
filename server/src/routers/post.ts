@@ -19,6 +19,8 @@ const postGet = z.object({
   limit: z.coerce.number().optional(),
   offset: z.coerce.number().min(0).optional(),
   user: z.coerce.number().min(1).optional(),
+  include_closed: z.coerce.boolean().optional(),
+  order: z.enum(["asc", "desc"]).default("desc"),
 });
 
 const postUpdate = postCreate.omit({ images: true, pickup_times: true });
@@ -60,8 +62,8 @@ postRouter.get("/", async (req, res) => {
     return res.status(400).json(query.error.issues);
   }
 
-  const { q, limit, offset, user } = query.data;
-  const posts = await Post.list(q, limit ?? -1, offset ?? -1, user ?? -1);
+  const { q, limit, offset, user, include_closed, order } = query.data;
+  const posts = await Post.list(q, limit, offset, user, include_closed, order);
   res.send(await Promise.all(posts.map(getAuxPostInfo)));
 });
 
@@ -99,6 +101,22 @@ postRouter.patch("/:id", checkAuthentication, async (req, res) => {
 
   const { title, description, location } = body.data;
   const updated = await Post.update(post, title, description, location);
+  if (!updated) {
+    return res.sendStatus(501);
+  }
+
+  res.send(await getAuxPostInfo(updated));
+});
+
+postRouter.post("/:id/close", checkAuthentication, async (req, res) => {
+  const post = await Post.find(+req.params.id);
+  if (!post) {
+    return res.sendStatus(404);
+  } else if (!isAuthorized(post.user_id, req.session?.userId)) {
+    return res.sendStatus(403);
+  }
+
+  const updated = await Post.close(post);
   if (!updated) {
     return res.sendStatus(501);
   }
