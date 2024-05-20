@@ -1,39 +1,34 @@
-import express, { NextFunction, Request, Response } from "express";
-import { isAuthorized } from "../utils/auth";
+import express from "express";
+import { z } from "zod";
+import { checkAuthentication, isAuthorized } from "../utils/auth";
 import { User } from "../models";
-import createValidator from "../utils/validator";
-
-// Is the user logged in? Not specific user, just ANY user
-export const checkAuthentication = (req: Request, res: Response, next: NextFunction) => {
-  if (typeof req.session?.userId !== "number") {
-    return res.sendStatus(401);
-  }
-
-  return next();
-};
 
 const userRouter: express.Router = express.Router();
 
-const validateUserCreate = createValidator({
-  username: "string",
-  password: "string",
+const userCreate = z.object({
+  username: z.string().max(255),
+  password: z.string().max(255).min(3),
 });
 
 userRouter.post("/", async (req, res) => {
-  const data = validateUserCreate(req.body);
-  if (!data) {
-    return res.send(400);
+  const body = await userCreate.safeParseAsync(req.body);
+  if (!body.success) {
+    return res.status(400).json(body.error.issues);
   }
 
-  // TODO: check if username is taken, and if it is what should you return?
-  const user = await User.create(data.username, data.password);
-  req.session!.userId = user!.id; // TODO: no !
+  try {
+    const user = await User.create(body.data.username, body.data.password);
+    if (!user) {
+      return res.sendStatus(500);
+    }
 
-  res.send(user);
+    req.session!.userId = user!.id; // TODO: no !
+    res.send(user);
+  } catch {
+    return res.sendStatus(409);
+  }
 });
 
-// These actions require users to be logged in (authentication)
-// Express lets us pass a piece of middleware to run for a specific endpoint
 userRouter.get("/", async (_req, res) => {
   res.send(await User.list());
 });

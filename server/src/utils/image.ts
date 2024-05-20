@@ -1,4 +1,4 @@
-import { writeFile } from "fs/promises";
+import { writeFile, mkdir } from "fs/promises";
 import { randomUUID } from "crypto";
 import path from "path";
 
@@ -30,6 +30,14 @@ const getImageData = async (image: string) => {
  * @returns The public URL to the image on our server
  */
 export const processImage = async (image: string) => {
+  try {
+    await mkdir(IMAGES_PATH, 0o744);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException)?.code !== "EEXIST") {
+      throw err;
+    }
+  }
+
   const res = await getImageData(image);
   const file = `${randomUUID()}.${res.ext}`;
   await writeFile(`${IMAGES_PATH}/${file}`, res.data);
