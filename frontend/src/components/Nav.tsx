@@ -5,7 +5,6 @@ import CurrentUserContext from "../context/CurrentUserContext";
 import { Navbar, Nav, Container, Dropdown } from "react-bootstrap";
 import logo from "../images/logo.svg";
 import user from "../images/user.svg";
-import "./components.css";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -19,7 +18,7 @@ const NavBar = () => {
   };
 
   return (
-    <Navbar className="white shadow-lg mb-3">
+    <Navbar className="white shadow-lg">
       <Container>
         <Navbar.Brand to="/" as={NavLink}>
           <img className="logo" src={logo} alt="Logo" height="60" width="100%" />

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 import CurrentUserContext from "../context/CurrentUserContext";
 import { getUser } from "../adapters/user-adapter";
 import { fetchHandler, getPostOptions } from "../utils/utils";
@@ -33,11 +33,9 @@ export default function UserPage() {
  const [pickupTime, setPickupTime] = useState("")
  const { id } = useParams()
 
+ if (!currentUser) return <Navigate to="/login" />;
 
  const isCurrentUserProfile = currentUser && Number(currentUser.id) === Number(id);
-
-
-
 
  useEffect(() => {
    const loadUser = async () => {

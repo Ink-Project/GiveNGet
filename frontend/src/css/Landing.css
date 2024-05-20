@@ -1,0 +1,81 @@
+/* TopComponentHome Page style */
+.beginning {
+  background: linear-gradient(#638fff, #5d5894);
+  padding: 4rem;
+  height: 35rem;
+}
+
+.left-column.col {
+  margin-top: 2rem;
+}
+
+.header1,
+.header2 {
+  margin-bottom: 0;
+  font-weight: bolder;
+  font-size: 55px;
+}
+
+.header1 {
+  color: white;
+}
+
+.left-para {
+  margin-top: 1rem;
+  font-size: 18px;
+  color: white;
+}
+/* Home Page style */
+
+/* MiddleComponentHome style */
+
+.middle-contain {
+  margin: 1rem;
+}
+
+.middleTitle {
+  font-weight: bold;
+  font-size: 40px;
+  margin: 1rem;
+  text-align: center;
+}
+
+.initiative1 {
+  border: 3px solid rgb(187, 187, 187);
+  transition: border-color 0.3s ease;
+}
+
+.initiative1:hover {
+  border-color: rgb(249, 157, 29);
+}
+
+.initiative2 {
+  border: 3px solid rgb(187, 187, 187);
+  transition: border-color 0.3s ease;
+}
+
+.initiative2:hover {
+  border-color: rgb(37, 40, 54);
+}
+
+.initiative3 {
+  border: 3px solid rgb(187, 187, 187);
+  transition: border-color 0.3s ease;
+}
+
+.initiative3:hover {
+  border-color: rgb(14, 165, 172);
+}
+
+/* MiddleComponentHome style */
+
+/* BootomComponent */
+
+footer {
+  padding: 1rem;
+  text-align: center;
+  color: white;
+  background-color: black;
+}
+
+/* BootomComponent */
