@@ -4,16 +4,20 @@ import { z } from "zod";
 
 export type Reservation = RowType<typeof rsvs>;
 
-type ClientReservation = Omit<Reservation, "post_id">;
+const rsvs = model(
+  "reservation",
+  "id",
+  z.object({
+    id: z.number().optional(),
+    pickup_time: z.date(),
+    user_id: z.number().nullable(),
+    post_id: z.number(),
+  }),
+);
 
-const rsvs = model("reservation", "id", z.object({
-  id: z.number().optional(),
-  pickup_time: z.date(),
-  user_id: z.number().nullable(),
-  post_id: z.number(),
-}));
-
-export const clientFilter = (data: (ClientReservation | undefined)[]) => {
+export const clientFilter = (
+  data: ({ id: number; pickup_time: Date; user_id: number | null } | undefined)[],
+) => {
   return data
     .filter((data) => !!data)
     .map((data) => ({ id: data!.id, pickup_time: data!.pickup_time, free: !data!.user_id }));
@@ -25,23 +29,24 @@ export const create = (times: Date[], postId: number) => {
     INSERT INTO ${rsvs.table} (post_id, pickup_time)
     VALUES ${"(?, ?), ".repeat(times.length).slice(0, -2)}
     RETURNING *`,
-    times.flatMap((time) => [postId, time])
+    times.flatMap((time) => [postId, time]),
   );
 };
 
-export const byPost = (postId: number) => {
-  return rsvs.queryMany(`SELECT * from ${rsvs.table} WHERE post_id = ?`, [postId]);
-};
+export const byPost = (post_id: number) => rsvs.select().where({ post_id }).exec();
 
-export const byPostForClient = async (postId: number) => {
-  const rows = await rsvs.raw(
-    `SELECT id, pickup_time, user_id from ${rsvs.table} WHERE post_id = ?`,
-    [postId]
+export const byPostForClient = async (post_id: number) => {
+  return clientFilter(
+    await rsvs.select(["id", "pickup_time", "user_id"]).where({ post_id }).exec(),
   );
-  return clientFilter(rows as ClientReservation[]);
 };
 
-export const find = (id: number) => rsvs.findBy("id", id);
+export const find = (id: number) =>
+  rsvs
+    .select()
+    .where({ id })
+    .exec()
+    .then((r) => r[0] as Reservation | undefined);
 
 /** Reserve this time as user `userId`. */
 export const select = async (self: Reservation, poster: number, userId: number) => {

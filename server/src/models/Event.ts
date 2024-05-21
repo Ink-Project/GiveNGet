@@ -15,7 +15,7 @@ const events = model(
     actor_id: z.number(),
     post_id: z.number(),
     created_at: z.date().optional(),
-  })
+  }),
 );
 
 /**
@@ -28,14 +28,8 @@ export const create = (event: EventType, postId: number, userId: number, actorId
 };
 
 /** Get all relevant events for a user in chronological order */
-export const inboxFor = (userId: number) => {
-  return events.queryMany(
-    `
-      SELECT * from ${events.table}
-      WHERE user_id = ?
-      ORDER BY created_at ASC`,
-    [userId]
-  );
+export const inboxFor = (user_id: number) => {
+  return events.select().where({ user_id }).orderBy("created_at", "asc").exec();
 };
 
 export const deleteAll = () => events.deleteAll();

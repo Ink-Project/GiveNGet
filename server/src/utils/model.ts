@@ -14,6 +14,106 @@ export type RowType<M extends Model<any, any, any, any, any, any, any>> = Requir
 
 type Data<S extends z.ZodTypeAny> = Required<z.infer<S>>;
 
+abstract class Query<
+  T extends z.ZodRawShape,
+  U extends z.UnknownKeysParam,
+  C extends z.ZodTypeAny,
+  O extends object,
+  I extends object,
+  S extends z.ZodObject<T, U, C, O, I>,
+  F extends (_data: Partial<O>) => unknown,
+> {
+  constructor(protected model: Model<T, U, C, O, I, S, F>) {}
+
+  abstract exec(): Promise<unknown>;
+}
+
+class Select<
+  T extends z.ZodRawShape,
+  U extends z.UnknownKeysParam,
+  C extends z.ZodTypeAny,
+  O extends object,
+  I extends object,
+  S extends z.ZodObject<T, U, C, O, I>,
+  F extends (_data: Partial<O>) => unknown,
+  P extends (keyof O)[] | undefined,
+> extends Query<T, U, C, O, I, S, F> {
+  private qwhere: { [K in keyof O]?: Comparator<O[K]> } = {};
+  private qlimit?: number;
+  private qoffset?: number;
+  private qorderBy?: [keyof O, "asc" | "desc"];
+
+  constructor(model: Model<T, U, C, O, I, S, F>, private keys: P) {
+    super(model);
+  }
+
+  where(items: { [K in keyof O]?: Comparator<O[K]> }) {
+    this.qwhere = items;
+    return this;
+  }
+
+  limit(limit?: number) {
+    this.qlimit = limit;
+    return this;
+  }
+
+  offset(offset?: number) {
+    this.qoffset = offset;
+    return this;
+  }
+
+  orderBy(key: keyof O, order: "asc" | "desc") {
+    this.qorderBy = [key, order];
+    return this;
+  }
+
+  exec() {
+    type Row = P extends undefined ? Data<S> : Pick<Data<S>, NonNullable<P>[number]>;
+
+    let query = `SELECT ${this.keys ? this.keys.join(", ") : "*"} from ${this.model.table}`;
+    let i = 0;
+    const values = [];
+    for (const k in this.qwhere) {
+      const cmp = this.qwhere[k];
+      if (!cmp) {
+        continue;
+      } else if (!i) {
+        query += " WHERE ";
+      } else {
+        query += " AND ";
+      }
+
+      // objects don't make sense in queries
+      if (typeof cmp === "object") {
+        // @ts-expect-error 2339
+        query += cmp.query(k);
+        // @ts-expect-error 2339
+        values.push(cmp.value);
+      } else {
+        query += `${k} = ?`;
+        values.push(cmp);
+      }
+      i++;
+    }
+
+    if (this.qorderBy) {
+      query += ` ORDER BY ${String(this.qorderBy[0])} ${
+        this.qorderBy[1] === "desc" ? "DESC" : "ASC"
+      }`;
+    }
+    if (this.qlimit) {
+      query += " LIMIT ?";
+      values.push(this.qlimit);
+    }
+    if (this.qoffset) {
+      query += " OFFSET ?";
+      values.push(this.qoffset);
+    }
+
+    return this.model.queryMany(query, values) as Promise<Row[]>;
+  }
+}
+
 export class Model<
   T extends z.ZodRawShape,
   U extends z.UnknownKeysParam,
@@ -21,15 +121,15 @@ export class Model<
   Output extends object,
   I extends object,
   S extends z.ZodObject<T, U, C, Output, I>,
-  F extends (_data: Required<Output>) => unknown
+  F extends (_data: Partial<Output>) => unknown,
 > {
-  private readonly schema: ReturnType<S["required"]>;
+  readonly schema: ReturnType<S["required"]>;
 
   constructor(
     public readonly table: string,
     private readonly pkey: keyof Output,
     schema: S,
-    private readonly transform?: F
+    private readonly transform?: F,
   ) {
     // TODO: get rid of this
     // @ts-expect-error 2322
@@ -74,14 +174,6 @@ export class Model<
     return (await this.raw(sql, binding)).map((r) => this.fromTableRow(r));
   }
 
-  /** Get a list of all rows in the db */
-  async list() {
-    // TODO: pagination, limit
-
-    // table is controlled by the server
-    return this.queryMany(`SELECT * FROM ${this.table}`, []);
-  }
-
   /** Create an instance of this resource. */
   async create(data: Output) {
     // data keys are server controlled, sql injection doesn't matter here
@@ -105,13 +197,12 @@ export class Model<
     values.push(self[this.pkey]); // cant be undefined
     return this.queryOne(
       `UPDATE ${this.table} SET ${keys.join(", ")} WHERE id=? RETURNING *`,
-      values
+      values,
     );
   }
 
-  /** Find the first row for which `col` matches `value` */
-  async findBy<K extends keyof Data<S>>(col: K, value: Data<S>[K]) {
-    return await this.queryOne(`SELECT * FROM ${this.table} WHERE ${String(col)} = ?`, [value]);
+  select<P extends (keyof Data<S>)[] | undefined>(keys?: P) {
+    return new Select(this, keys);
   }
 
   /** Clear all entries in this table and reset the primary key sequence */
@@ -120,6 +211,23 @@ export class Model<
     await knex.raw(`ALTER SEQUENCE ${this.table}_${String(this.pkey)}_seq RESTART WITH 1`);
   }
 }
+
+type ComparatorObj<T> = {
+  value: T;
+  query(key: string): string;
+};
+type Comparator<T> = T | ComparatorObj<T>;
+
+export const m = {
+  like: <T>(value: T) => ({
+    query: (key) => `${key} LIKE ?`,
+    value,
+  }),
+  likeInsensitive: <T>(value: T) => ({
+    query: (key) => `lower(${key}) LIKE lower(?)`,
+    value,
+  }),
+} satisfies Record<string, (_: unknown) => ComparatorObj<unknown>>;
 
 /**
  * @param table The DB table this model corresponds to
@@ -134,7 +242,7 @@ export default function model<
   O extends object,
   I extends object,
   S extends z.ZodObject<T, U, C, O, I>,
-  F extends (_data: Required<O>) => unknown
+  F extends (_data: Partial<O>) => unknown,
 >(table: string, pkey: keyof z.infer<S>, schema: S, transform?: F) {
   return new Model(table, pkey, schema, transform);
 }

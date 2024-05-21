@@ -1,5 +1,5 @@
 import { processImage } from "../utils/image";
-import model, { RowType } from "../utils/model";
+import model, { RowType, m } from "../utils/model";
 import { Reservation } from "../models";
 import { z } from "zod";
 
@@ -22,7 +22,7 @@ const posts = model(
     created_at: z.date().optional(),
     updated_at: z.date().optional(),
     closed: z.boolean().optional(),
-  })
+  }),
 );
 
 export const create = async (
@@ -31,7 +31,7 @@ export const create = async (
   description: string,
   location: string,
   images: string[],
-  pickup_times: Date[]
+  pickup_times: Date[],
 ): Promise<PostWithInfo | undefined> => {
   const post = await posts.create({
     title,
@@ -73,27 +73,28 @@ export const list = (
   closed?: boolean,
   order?: "desc" | "asc",
 ) => {
-  // There are other, better ways to do pagination but this is simple
-  let query = `SELECT * from ${posts.table}`;
-  const buf: (string | number)[] = [];
-
-  // prettier-ignore
-  {
-    const where: string[] = [];
-    if (q) { where.push(`lower(title) LIKE lower(?)`); buf.push(`%${q}%`); }
-    if (user && user > 0) { where.push(`user_id = ?`); buf.push(user); }
-    if (!closed) { where.push(`closed = false`); }
-
-    if (where.length) { query += ` WHERE ${where.join(" AND ")}`; }
-    query += ` ORDER BY created_at ${order === "asc" ? "ASC" : "DESC"}`;
-    if (limit && limit > 0) { query += ` LIMIT ?`; buf.push(limit); }
-    if (offset && offset > 0) { query += ` OFFSET ?`; buf.push(offset); }
-  }
-
-  return posts.queryMany(query, buf);
+  return (
+    posts
+      .select()
+      .where({
+        title: q ? m.likeInsensitive(`%${q}%`) : undefined,
+        user_id: user,
+        closed: !closed ? false : undefined,
+      })
+      // There are other, better ways to do pagination but this is simple
+      .limit(limit)
+      .offset(offset)
+      .orderBy("created_at", order ?? "desc")
+      .exec()
+  );
 };
 
-export const find = (id: number) => posts.findBy("id", id);
+export const find = (id: number) =>
+  posts
+    .select()
+    .where({ id })
+    .exec()
+    .then((r) => r[0] as Post | undefined);
 
 export const update = (self: Post, title: string, description: string, location: string) => {
   return posts.update(self, { title, description, location });
@@ -115,14 +116,14 @@ export namespace Image {
       id: z.number().optional(),
       url: z.string(),
       post_id: z.number(),
-    })
+    }),
   );
 
   export const create = (url: string, postId: number) => images.create({ url, post_id: postId });
 
-  export const byPost = async (postId: number) => {
-    const res = await images.raw(`SELECT url from ${images.table} WHERE post_id = ?`, postId);
-    return res.map((r) => (r as { url: string }).url); // TODO: validate?
+  export const byPost = async (post_id: number) => {
+    const r = await images.select(["url"]).where({ post_id }).exec();
+    return r.map((r_1) => r_1.url);
   };
 
   export const deleteAll = () => images.deleteAll();

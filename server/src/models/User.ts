@@ -23,23 +23,34 @@ const users = model(
       return { ...this, password: undefined, updated_at: undefined };
     };
     return data;
-  }
+  },
 );
 
 const hashPassword = (plaintext: string) =>
   bcrypt.hash(plaintext, 10).catch((err) => console.log(err.message));
 
-export const list = () => users.list();
+export const list = () => users.select().exec();
 
-export const find = (id: number) => users.findBy("id", id);
+export const find = (id: number) =>
+  users
+    .select()
+    .where({ id })
+    .exec()
+    .then((r) => r[0] as User | undefined);
 
-export const findByUsername = (username: string) => users.findBy("username", username);
+export const findByUsername = (username: string) =>
+  users
+    .select()
+    .where({ username })
+    .exec()
+    .then((r) => r[0] as User | undefined);
 
 export const create = async (username: string, password: string) => {
   const hashed = await hashPassword(password);
   if (!hashed) {
     return;
   }
+
   return await users.create({ username, password: hashed });
 };
 
@@ -48,7 +59,7 @@ export const update = async (
   username?: string,
   password?: string,
   full_name?: string,
-  profile_image?: string
+  profile_image?: string,
 ) => {
   const obj: Parameters<typeof users.update>[1] = {};
   if (profile_image !== undefined) {
