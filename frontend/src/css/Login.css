@@ -101,7 +101,7 @@ form.sign-in-form {
 
 .btn-solid{
   width: 150px;
-  background-color: #6366ff;
+  background-color: #44A1A0;
   border: none;
   outline: none;
   height: 49px;
@@ -116,7 +116,7 @@ form.sign-in-form {
 
 input.btn {
   width: 150px;
-  background-color: #6366ff;
+  background-color: #44A1A0;
   border: none;
   outline: none;
   height: 49px;
@@ -150,7 +150,7 @@ input.btn {
   top: -10%;
   right: 48%;
   transform: translateY(-50%);
-  background-image: linear-gradient(-45deg, #6385ff 10%, #5d5894 100%);
+  background-image: linear-gradient(#0D5C63, #0D5C63);
   transition: 1.8s ease-in-out;
   border-radius: 50%;
   z-index: 6;
