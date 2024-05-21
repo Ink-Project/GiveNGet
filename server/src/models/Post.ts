@@ -10,15 +10,20 @@ export type PostWithInfo = Post & {
   reservations: ReturnType<typeof Reservation.clientFilter>;
 };
 
-const posts = model("posts", "id", z.object({
-  id: z.number().optional(),
-  title: z.string(),
-  description: z.string(),
-  location: z.string(),
-  user_id: z.number(),
-  created_at: z.date().optional(),
-  updated_at: z.date().optional(),
-}));
+const posts = model(
+  "posts",
+  "id",
+  z.object({
+    id: z.number().optional(),
+    title: z.string(),
+    description: z.string(),
+    location: z.string(),
+    user_id: z.number(),
+    created_at: z.date().optional(),
+    updated_at: z.date().optional(),
+    closed: z.boolean().optional(),
+  })
+);
 
 export const create = async (
   creatorId: number,
@@ -28,7 +33,13 @@ export const create = async (
   images: string[],
   pickup_times: Date[]
 ): Promise<PostWithInfo | undefined> => {
-  const post = await posts.create({ title, description, location, user_id: creatorId });
+  const post = await posts.create({
+    title,
+    description,
+    location,
+    user_id: creatorId,
+    closed: false,
+  });
   if (!post) {
     return;
   }
@@ -54,7 +65,14 @@ export const create = async (
   };
 };
 
-export const list = (q?: string, limit: number = -1, offset: number = -1, user: number = -1) => {
+export const list = (
+  q?: string,
+  limit?: number,
+  offset?: number,
+  user?: number,
+  closed?: boolean,
+  order?: "desc" | "asc",
+) => {
   // There are other, better ways to do pagination but this is simple
   let query = `SELECT * from ${posts.table}`;
   const buf: (string | number)[] = [];
@@ -63,10 +81,13 @@ export const list = (q?: string, limit: number = -1, offset: number = -1, user: 
   {
     const where: string[] = [];
     if (q) { where.push(`lower(title) LIKE lower(?)`); buf.push(`%${q}%`); }
-    if (user > 0) { where.push(`user_id = ?`); buf.push(user); }
-    if (where.length) { query += ` WHERE ${where.join("AND")}`; }
-    if (limit > 0) { query += ` LIMIT ?`; buf.push(limit); }
-    if (offset > 0) { query += ` OFFSET ?`; buf.push(offset); }
+    if (user && user > 0) { where.push(`user_id = ?`); buf.push(user); }
+    if (!closed) { where.push(`closed = false`); }
+
+    if (where.length) { query += ` WHERE ${where.join(" AND ")}`; }
+    query += ` ORDER BY created_at ${order === "asc" ? "ASC" : "DESC"}`;
+    if (limit && limit > 0) { query += ` LIMIT ?`; buf.push(limit); }
+    if (offset && offset > 0) { query += ` OFFSET ?`; buf.push(offset); }
   }
 
   return posts.queryMany(query, buf);
@@ -83,13 +104,19 @@ export const deleteAll = async () => {
   await posts.deleteAll();
 };
 
+export const close = (self: Post) => posts.update(self, { closed: true });
+
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Image {
-  const images = model("images", "id", z.object({
-    id: z.number().optional(),
-    url: z.string(),
-    post_id: z.number(),
-  }));
+  const images = model(
+    "images",
+    "id",
+    z.object({
+      id: z.number().optional(),
+      url: z.string(),
+      post_id: z.number(),
+    })
+  );
 
   export const create = (url: string, postId: number) => images.create({ url, post_id: postId });
 
