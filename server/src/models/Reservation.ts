@@ -1,10 +1,10 @@
 import { Event } from "../models";
-import model, { RowType } from "../utils/model";
+import table, { RowType } from "../utils/model";
 import { z } from "zod";
 
 export type Reservation = RowType<typeof rsvs>;
 
-const rsvs = model(
+const rsvs = table(
   "reservation",
   "id",
   z.object({
@@ -26,7 +26,7 @@ export const clientFilter = (
 export const create = (times: Date[], postId: number) => {
   return rsvs.queryMany(
     `
-    INSERT INTO ${rsvs.table} (post_id, pickup_time)
+    INSERT INTO ${rsvs.name} (post_id, pickup_time)
     VALUES ${"(?, ?), ".repeat(times.length).slice(0, -2)}
     RETURNING *`,
     times.flatMap((time) => [postId, time]),

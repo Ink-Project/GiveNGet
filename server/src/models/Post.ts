@@ -1,5 +1,5 @@
 import { processImage } from "../utils/image";
-import model, { RowType, m } from "../utils/model";
+import table, { RowType, m } from "../utils/model";
 import { Reservation } from "../models";
 import { z } from "zod";
 
@@ -10,7 +10,7 @@ export type PostWithInfo = Post & {
   reservations: ReturnType<typeof Reservation.clientFilter>;
 };
 
-const posts = model(
+const posts = table(
   "posts",
   "id",
   z.object({
@@ -109,7 +109,7 @@ export const close = (self: Post) => posts.update(self, { closed: true });
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Image {
-  const images = model(
+  const images = table(
     "images",
     "id",
     z.object({

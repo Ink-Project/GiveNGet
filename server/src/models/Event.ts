@@ -1,11 +1,11 @@
-import model from "../utils/model";
+import table from "../utils/model";
 import { z } from "zod";
 
 export const EVENT_TYPES = ["reserved", "cancelled"] as const;
 
 export type EventType = (typeof EVENT_TYPES)[number];
 
-const events = model(
+const events = table(
   "event_log",
   "id",
   z.object({

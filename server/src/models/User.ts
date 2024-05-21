@@ -1,11 +1,11 @@
 import { z } from "zod";
 import bcrypt from "bcrypt";
-import model, { RowType } from "../utils/model";
+import table, { RowType } from "../utils/model";
 import { processImage } from "../utils/image";
 
 export type User = RowType<typeof users>;
 
-const users = model(
+const users = table(
   "users",
   "id",
   z.object({
