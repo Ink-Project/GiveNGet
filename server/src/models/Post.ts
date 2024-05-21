@@ -21,7 +21,7 @@ const posts = model(
     user_id: z.number(),
     created_at: z.date().optional(),
     updated_at: z.date().optional(),
-    closed: z.boolean(),
+    closed: z.boolean().optional(),
   })
 );
 
@@ -83,10 +83,11 @@ export const list = (
     if (q) { where.push(`lower(title) LIKE lower(?)`); buf.push(`%${q}%`); }
     if (user && user > 0) { where.push(`user_id = ?`); buf.push(user); }
     if (!closed) { where.push(`closed = false`); }
-    if (where.length) { query += ` WHERE ${where.join("AND")}`; }
+
+    if (where.length) { query += ` WHERE ${where.join(" AND ")}`; }
+    query += ` ORDER BY created_at ${order === "asc" ? "ASC" : "DESC"}`;
     if (limit && limit > 0) { query += ` LIMIT ?`; buf.push(limit); }
     if (offset && offset > 0) { query += ` OFFSET ?`; buf.push(offset); }
-    query += ` ORDER BY created_at ${order === "asc" ? "ASC" : "DESC"}`;
   }
 
   return posts.queryMany(query, buf);
