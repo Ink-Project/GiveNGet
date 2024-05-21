@@ -97,6 +97,10 @@ export class Model<
   async update(self: Data<S>, data: Partial<Output>) {
     // data keys are server controlled, sql injection doesn't matter here
     const values = Object.values(data);
+    if (!values.length) {
+      return self;
+    }
+
     const keys = Object.keys(data).map((key) => `${key}=?`);
     values.push(self[this.pkey]); // cant be undefined
     return this.queryOne(

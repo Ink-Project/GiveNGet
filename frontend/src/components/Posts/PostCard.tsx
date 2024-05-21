@@ -1,6 +1,6 @@
 import React from "react";
 import { Card } from "react-bootstrap";
-import { Post } from "../utils/TypeProps";
+import { Post } from "../../utils/TypeProps";
 
 type PostCardProps = {
   post: Post;

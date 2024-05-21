@@ -1,13 +1,26 @@
 import express from "express";
 import { z } from "zod";
-import { checkAuthentication, isAuthorized } from "../utils/auth";
+import { checkAuthentication, isAuthorized, isValidPassword } from "../utils/auth";
 import { User } from "../models";
 
 const userRouter: express.Router = express.Router();
 
 const userCreate = z.object({
-  username: z.string().max(255),
+  username: z.string().max(255).min(3),
   password: z.string().max(255).min(3),
+  full_name: z.string().max(255).min(3).optional(),
+});
+
+const userUpdate = z.object({
+  username: z.string().min(3).optional(),
+  password: z
+    .object({
+      original: z.string().max(255).min(3),
+      updated: z.string().max(255).min(3),
+    })
+    .optional(),
+  profile_image: z.string().optional(),
+  full_name: z.string().optional(),
 });
 
 userRouter.post("/", async (req, res) => {
@@ -17,14 +30,15 @@ userRouter.post("/", async (req, res) => {
   }
 
   try {
-    const user = await User.create(body.data.username, body.data.password);
+    const user = await User.create(body.data.username, body.data.password, body.data.full_name);
     if (!user) {
       return res.sendStatus(500);
     }
 
     req.session!.userId = user!.id; // TODO: no !
     res.send(user);
-  } catch {
+  } catch (err) {
+    console.warn(err);
     return res.sendStatus(409);
   }
 });
@@ -49,11 +63,13 @@ userRouter.get("/:id", async (req, res) => {
 
 userRouter.patch("/:id", checkAuthentication, async (req, res) => {
   const id = +req.params.id;
-  // Not only do users need to be logged in to update a user, they
-  // need to be authorized to perform this action for this particular
-  // user (users should only be able to change their own profiles)
   if (!isAuthorized(id, req.session?.userId)) {
     return res.sendStatus(403);
+  }
+
+  const body = await userUpdate.safeParseAsync(req.body);
+  if (!body.success) {
+    return res.status(400).json(body.error.issues);
   }
 
   const user = await User.find(id);
@@ -61,7 +77,14 @@ userRouter.patch("/:id", checkAuthentication, async (req, res) => {
     return res.sendStatus(404);
   }
 
-  const updated = User.update(user, req.body.username);
+  // require original password to change the password, prevents against an attacker who steals your
+  // session/has local access from changing your password and locking you out
+  const { username, password, profile_image, full_name } = body.data;
+  if (password && !(await isValidPassword(password.original, user.password))) {
+    return res.status(403).json("password mismatch");
+  }
+
+  const updated = await User.update(user, username, password?.updated, full_name, profile_image);
   if (!updated) {
     return res.sendStatus(501);
   }

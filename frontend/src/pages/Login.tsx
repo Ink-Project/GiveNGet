@@ -2,9 +2,9 @@ import React, { useContext, useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { logUserIn } from "../adapters/auth-adapter";
 import CurrentUserContext from "../context/CurrentUserContext";
-import { fetchHandler, getPostOptions } from "../utils/utils";
 import log from "../images/log.svg";
 import register from "../images/register.svg";
+import { createUser } from "../adapters/user-adapter";
 import "../css/Login.css";
 
 const LoginPage = () => {
@@ -12,6 +12,7 @@ const LoginPage = () => {
   const [errorText, setErrorText] = useState("");
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
   const [isSignUpMode, setIsSignUpMode] = useState(false);
+  const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,6 +23,7 @@ const LoginPage = () => {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+    if (name === "fullName") setFullName(value);
     if (name === "username") setUsername(value);
     if (name === "password") setPassword(value);
     if (name === "confirmPassword") setConfirmPassword(value);
@@ -37,8 +39,7 @@ const LoginPage = () => {
       return;
     }
 
-    await fetchHandler("/api/v1/users/", getPostOptions({ username, password }));
-    const [user, error] = await logUserIn({ username, password });
+    const [user, error] = await createUser({ full_name: fullName, username, password });
     if (error) {
       setErrorText(error.message);
       return;
@@ -85,6 +86,18 @@ const LoginPage = () => {
           </form>
           <form onSubmit={handleSignUpSubmit} className="sign-up-form">
             <h2 className="title">Sign up</h2>
+            <div className="input-field">
+              <i className="fas fa-user"></i>
+              <input
+                type="text"
+                name="fullName"
+                placeholder="Full Name"
+                value={fullName}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
             <div className="input-field">
               <i className="fas fa-user"></i>
               <input
