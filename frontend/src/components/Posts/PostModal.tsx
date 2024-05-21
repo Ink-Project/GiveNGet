@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, Container, Row, Col, Carousel } from "react-bootstrap";
-import { Post } from "../utils/TypeProps";
+import { Post } from "../../utils/TypeProps";
 
 type PostModalProps = {
   post: Post | null;

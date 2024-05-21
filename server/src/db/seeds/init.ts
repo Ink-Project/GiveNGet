@@ -6,9 +6,9 @@ export const seed = async () => {
   await Post.deleteAll();
   await User.deleteAll();
 
-  const cool_cat = (await User.create("cool_cat", "1234"))!;
-  const leet_guy = (await User.create("l33t-guy", "1234"))!;
-  const wowow = (await User.create("wowow", "1234"))!;
+  const cool_cat = (await User.create("cool_cat", "1234", "Chris Lopez"))!;
+  const leet_guy = (await User.create("l33t-guy", "1234", "Michael Perez"))!;
+  const wowow = (await User.create("wowow", "1234", "John Doe"))!;
 
   const first = await Post.create(
     cool_cat.id,
