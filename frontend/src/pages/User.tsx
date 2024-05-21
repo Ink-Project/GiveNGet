@@ -229,6 +229,10 @@ function dragOverHandler(event:React.DragEvent) {
          </Container>
        </Modal.Body>
      </Modal>
+
+     <footer className="footer fixed-bottom">
+        <p className="footer-p text-center">&copy; 2024 Copyright: Ink</p>
+      </footer>
    </>
  );
 }

@@ -1,10 +1,11 @@
 import { Container, Row } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { fetchHandler, getPostOptions } from "../utils/utils";
-import SearchBar from "../components/SearchBar";
-import PostCard from "../components/PostCard";
-import PostModal from "../components/PostModal";
+import SearchBar from "../components/Posts/SearchBar";
+import PostCard from "../components/Posts/PostCard";
+import PostModal from "../components/Posts/PostModal";
 import { Post } from "../utils/TypeProps";
+import "../css/Posts.css";
 
 const Posts = () => {
   const [posts, setPosts] = useState<Post[][]>([]);
@@ -41,7 +42,7 @@ const Posts = () => {
 
   return (
     <>
-      <h1>Posts</h1>
+      <h1 className="posts-h1">Explore Posts</h1>
       <Container className="search mt-4">
         <SearchBar searchTerm={searchTerm} onSearchInputChange={handleSearchInputChange} />
       </Container>
@@ -64,6 +65,9 @@ const Posts = () => {
         onHide={() => setShowModal(false)}
         handleReservation={handleReservation}
       />
+      <footer className="footer fixed-bottom">
+        <p className="footer-p text-center">&copy; 2024 Copyright: Ink</p>
+      </footer>
     </>
   );
 };

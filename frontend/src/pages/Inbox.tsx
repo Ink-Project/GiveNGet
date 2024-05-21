@@ -71,6 +71,9 @@ const Inbox = () => {
           </tbody>
         </Table>
       </Container>
+      <footer className="footer fixed-bottom">
+        <p className="footer-p text-center">&copy; 2024 Copyright: Ink</p>
+      </footer>
     </>
   );
 };
