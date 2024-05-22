@@ -49,7 +49,7 @@
 /* Top Component*/
 
 .posts {
-  height: 80vh;
+  height: fit-content;
 }
 
 .img-fluid {

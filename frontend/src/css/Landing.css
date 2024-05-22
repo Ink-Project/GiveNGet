@@ -241,7 +241,7 @@ body {
   background-image: url("../images/footer.svg");
   background-size: cover;
   background-repeat: no-repeat;
-  height: 18rem;
+  /* height: 18rem; */
   display: flex;
   justify-content: center;
   align-items: center;
