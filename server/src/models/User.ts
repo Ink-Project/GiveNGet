@@ -35,12 +35,12 @@ export const find = (id: number) => users.findBy("id", id);
 
 export const findByUsername = (username: string) => users.findBy("username", username);
 
-export const create = async (username: string, password: string) => {
+export const create = async (username: string, password: string, full_name?: string) => {
   const hashed = await hashPassword(password);
   if (!hashed) {
     return;
   }
-  return await users.create({ username, password: hashed });
+  return await users.create({ username, password: hashed, full_name });
 };
 
 export const update = async (

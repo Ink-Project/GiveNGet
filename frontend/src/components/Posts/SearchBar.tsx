@@ -1,26 +1,30 @@
 import React from "react";
-import { Form } from "react-bootstrap";
+import search from "../../images/search.svg";
+import FilterComponent from "../FilterComponent";
 
 type SearchBarProps = {
   searchTerm: string;
   onSearchInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
+// const []
+
 const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, onSearchInputChange }) => {
   return (
-    <Form>
-      <div className="form-floating">
-        <Form.Control
+    <>
+      <div className="box">
+        <input
           type="text"
           placeholder="Search posts..."
           value={searchTerm}
           onChange={onSearchInputChange}
         />
-        <label htmlFor="search" className="form-label">
-          Search
+        <label htmlFor="search">
+          <img className="search-icon" src={search} alt="search logo" />
         </label>
       </div>
-    </Form>
+      <FilterComponent />
+    </>
   );
 };
 
