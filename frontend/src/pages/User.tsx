@@ -1,13 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
+import { Container, Row, Col } from "react-bootstrap";
 import CurrentUserContext from "../context/CurrentUserContext";
 import { getUser } from "../adapters/user-adapter";
 import { fetchHandler, getPostOptions } from "../utils/utils";
-import { Container, Row } from "react-bootstrap";
-import ProfilePostCard from "../components/ProfilePostCard";
-import PostModal from "../components/Posts/PostModal";
-import CreatePostModal from "../components/CreatePostModal";
 import { Post } from "../utils/TypeProps";
+import ProfilePostCard from "../components/Users/ProfilePostCard";
+import PostModal from "../components/Posts/PostModal";
+import CreatePostModal from "../components/Users/CreatePostModal";
+import ProfileImageUpload from "../components/Users/ProfileImageUpload";
+import "../css/Users.css";
 
 type User = {
   id: string;
@@ -46,11 +48,12 @@ export default function UserPage() {
     loadUser();
   }, [id]);
 
+  const fetchUserPosts = async () => {
+    const data = await fetchHandler(`/api/v1/posts?user=${id}`);
+    setUserPosts(data);
+  };
+
   useEffect(() => {
-    const fetchUserPosts = async () => {
-      const data = await fetchHandler(`/api/v1/posts?user=${id}`);
-      setUserPosts(data);
-    };
     fetchUserPosts();
   }, [id]);
 
@@ -74,42 +77,58 @@ export default function UserPage() {
   ) => {
     event.preventDefault();
     await fetchHandler(`/api/v1/reservations/${reservationId}/select`, getPostOptions({}));
-    // fetchPosts();
   };
 
   return (
     <>
-      <br />
-      <h1>{profileUsername}'s Posts</h1>
-      <br />
-      <button type="button" className="btn btn-outline-dark" onClick={showPostForm}>
-        {" "}
-        Create New Post
-      </button>
-      <br />
-      <Container className="posts mt-4">
-        {userPosts.map((postOrArray, index) => {
-          if (Array.isArray(postOrArray)) {
-            return (
-              <Row key={index}>
-                {postOrArray.map((post) => (
-                  <ProfilePostCard
-                    key={post.id}
-                    post={post}
-                    onClick={handleCardClick}
-                    title={title}
-                    description={description}
-                    location={location}
-                    setTitle={setTitle}
-                    setDescription={setDescription}
-                    setLocation={setLocation}
-                    selectedPost={selectedPost!}
-                  />
-                ))}
-              </Row>
-            );
-          }
-        })}
+      <Container className="mt-4">
+        <Row>
+          <Col className="userProfile">
+            {id && userProfile && <ProfileImageUpload userId={id} />}
+            <h3>Username: {profileUsername}</h3>
+            <div className="simpleLine"></div>
+            <div>
+              <button className="edit-profile">Edit Profile</button>
+            </div>
+            <div>
+              <button className="delete-profile">Delete</button>
+            </div>
+          </Col>
+
+          <Col className="col-md-8">
+            <div className="userContent">
+              <h2 className="profile-h2">Profile</h2>
+              <button type="button" className="create-post" onClick={showPostForm}>
+                Create New Post
+              </button>
+            </div>
+            <div className="seperater"></div>
+            <Container className="usersPost">
+              {userPosts.map((postOrArray, index) => {
+                if (Array.isArray(postOrArray)) {
+                  return (
+                    <Row key={index}>
+                      {postOrArray.map((post) => (
+                        <ProfilePostCard
+                          key={post.id}
+                          post={post}
+                          onClick={handleCardClick}
+                          title={title}
+                          description={description}
+                          location={location}
+                          setTitle={setTitle}
+                          setDescription={setDescription}
+                          setLocation={setLocation}
+                          selectedPost={selectedPost!}
+                        />
+                      ))}
+                    </Row>
+                  );
+                }
+              })}
+            </Container>
+          </Col>
+        </Row>
       </Container>
 
       <PostModal
@@ -120,21 +139,23 @@ export default function UserPage() {
       />
 
       <CreatePostModal
-        post={selectedPost}
+        show={newPostModal}
+        onHide={() => setNewPostModal(false)}
         title={title}
         setTitle={setTitle}
-        location={location}
-        setLocation={setLocation}
         description={description}
         setDescription={setDescription}
+        location={location}
+        setLocation={setLocation}
         images={images}
         setImages={setImages}
         reservations={reservations}
         setReservations={setReservations}
-        show={newPostModal}
-        onHide={() => setNewPostModal(false)}
-        handleReservation={handleReservation}
+        onPostCreated={fetchUserPosts}
       />
+      <footer className="footer fixed-bottom">
+        <p className="footer-p text-center">&copy; 2024 Copyright: Ink</p>
+      </footer>
     </>
   );
 }

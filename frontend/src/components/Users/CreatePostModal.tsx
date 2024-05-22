@@ -1,19 +1,17 @@
 import React from "react";
 import { Modal, Container, Row } from "react-bootstrap";
-import { Post } from "../utils/TypeProps";
-import { fetchHandler } from "../utils/utils"; 
-import { getPostOptions } from "../utils/utils";
+import { fetchHandler } from "../../utils/utils";
+import { getPostOptions } from "../../utils/utils";
 
-type PostModalProps = {
-  post: Post | null;
+type CreatePostModalProps = {
   show: boolean;
+  onHide: () => void;
   title: string;
   description: string;
   location: string;
   reservations: string[];
   images: string[];
-  onHide: () => void;
-  handleReservation: (event: React.FormEvent<HTMLFormElement>, reservationId: number) => void;
+  onPostCreated: () => void;
   setImages: React.Dispatch<React.SetStateAction<string[]>>;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
   setDescription: React.Dispatch<React.SetStateAction<string>>;
@@ -21,7 +19,7 @@ type PostModalProps = {
   setReservations: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
-const CreatePostModal: React.FC<PostModalProps> = ({
+const CreatePostModal: React.FC<CreatePostModalProps> = ({
   show,
   onHide,
   title,
@@ -34,6 +32,7 @@ const CreatePostModal: React.FC<PostModalProps> = ({
   setLocation,
   setImages,
   setReservations,
+  onPostCreated,
 }) => {
   const handleNewPostSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,8 +43,9 @@ const CreatePostModal: React.FC<PostModalProps> = ({
       images,
       pickup_times: reservations,
     };
-    console.log(postFormData);
-    await fetchHandler('/api/v1/posts/', getPostOptions(postFormData));
+    await fetchHandler("/api/v1/posts/", getPostOptions(postFormData));
+    onPostCreated();
+    onHide();
   };
 
   async function bytesToBase64DataUrl(bytes: Uint8Array, type: string) {
@@ -130,9 +130,11 @@ const CreatePostModal: React.FC<PostModalProps> = ({
                   id="drop_zone"
                   onDrop={dropHandler}
                   onDragOver={dragOverHandler}
-                  style={{ border: '1px dashed black', padding: '20px', textAlign: 'center' }}
+                  style={{ border: "1px dashed black", padding: "20px", textAlign: "center" }}
                 >
-                  <p>Drag one or more files to this <i>drop zone</i>.</p>
+                  <p>
+                    Drag one or more files to this <i>drop zone</i>.
+                  </p>
                 </div>
               </Row>
               <label htmlFor="pickupTime">Pickup Time:</label>
@@ -165,6 +167,3 @@ const CreatePostModal: React.FC<PostModalProps> = ({
 };
 
 export default CreatePostModal;
-
-
-

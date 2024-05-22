@@ -48,6 +48,9 @@
 
 /* Top Component*/
 
+.posts {
+  height: 80vh;
+}
 
 /* Post Modal styling */
 .reservationBtn{
