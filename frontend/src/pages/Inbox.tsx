@@ -89,32 +89,3 @@ const Inbox = () => {
 };
 
 export default Inbox;
-
-/*
-      {/* <h1>Inbox</h1>
-      <Container>
-        <Table className="mt-4">
-          <thead className="table-dark">
-            <tr>
-              <th scope="col">Post Name</th>
-              <th scope="col">Created by</th>
-              <th scope="col">Created At</th>
-              <th scope="col">Confirmation</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reservations.map((reservation) => (
-              <tr key={reservation.id}>
-                <td>{reservation.post.title}</td>
-                <td>{reservation.actor_name}</td>
-                <td>{new Date(reservation.created_at).toLocaleString()}</td>
-                <td>{reservation.event}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </Container>
-      <footer className="footer fixed-bottom">
-        <p className="footer-p text-center">&copy; 2024 Copyright: Ink</p>
-      </footer> }
-      */

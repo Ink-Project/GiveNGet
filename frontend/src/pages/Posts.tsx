@@ -1,4 +1,4 @@
-import { Container, Row } from "react-bootstrap";
+import { Container, Row, Alert } from "react-bootstrap";
 import { useState, useEffect, useContext } from "react";
 import { fetchHandler, getPostOptions } from "../utils/utils";
 import SearchBar from "../components/Posts/SearchBar";
@@ -17,11 +17,11 @@ const Posts = () => {
   const [order, setOrder] = useState("asc");
   const [limit, setLimit] = useState(10);
   const { currentUser } = useContext(CurrentUserContext);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   const fetchPosts = async () => {
-    const data = await fetchHandler(
-      `/api/v1/posts?q=${searchTerm}&limit=${limit}&order=${order}`
-    );
+    const data = await fetchHandler(`/api/v1/posts?q=${searchTerm}&limit=${limit}&order=${order}`);
     setPosts(data);
   };
 
@@ -42,9 +42,7 @@ const Posts = () => {
     setShowModal(true);
   };
 
-  const handleSearchInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
@@ -55,41 +53,40 @@ const Posts = () => {
     event.preventDefault();
 
     if (!currentUser) {
-      // If not logged in, redirect to the login page or display an error message
-      alert("Please sign in to make a reservation.");
+      // User must be logged in else, display an error message
+      setAlertMessage("Please sign in to make a reservation.");
+      setAlertVisible(true);
       return;
     }
-    await fetchHandler(
-      `/api/v1/reservations/${reservationId}/select`,
-      getPostOptions({})
-    );
+    // User cant reserve their own post display an error message
+    if (selectedPost && +selectedPost.user_id === +currentUser.id) {
+      setAlertMessage("You cannot reserve your own post.");
+      setAlertVisible(true);
+      return;
+    }
+    await fetchHandler(`/api/v1/reservations/${reservationId}/select`, getPostOptions({}));
     fetchPosts();
   };
 
   return (
     <>
+      {alertVisible && (
+        <Alert style={{textAlign: "center"}} variant="danger" onClose={() => setAlertVisible(false)} dismissible>
+          {alertMessage}
+        </Alert>
+      )}
       <h1 className="posts-h1">Explore Posts</h1>
       <Container className="search mt-4">
-        <SearchBar
-          searchTerm={searchTerm}
-          onSearchInputChange={handleSearchInputChange}
-        />
+        <SearchBar searchTerm={searchTerm} onSearchInputChange={handleSearchInputChange} />
       </Container>
-      <FilterComponent
-        onOrderChange={handleOrderChange}
-        onLimitChange={handleLimitChange}
-      />
+      <FilterComponent onOrderChange={handleOrderChange} onLimitChange={handleLimitChange} />
       <Container className="posts mt-4">
         {posts.map((postOrArray, index) => {
           if (Array.isArray(postOrArray)) {
             return (
               <Row key={index}>
                 {postOrArray.map((post) => (
-                  <PostCard
-                    key={post.id}
-                    post={post}
-                    onClick={handleCardClick}
-                  />
+                  <PostCard key={post.id} post={post} onClick={handleCardClick} />
                 ))}
               </Row>
             );

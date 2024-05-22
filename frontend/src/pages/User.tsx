@@ -1,18 +1,20 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
-import { Container, Row, Button } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import CurrentUserContext from "../context/CurrentUserContext";
 import { getUser } from "../adapters/user-adapter";
-import { fetchHandler } from "../utils/utils";
-import PostCard from "../components/Posts/PostCard"
-import UsersPostModal from "../components/Users/UsersPostModal";
-import CreatePost from "../components/Users/CreatePost";
+import { fetchHandler, getPostOptions } from "../utils/utils";
 import { Post } from "../utils/TypeProps";
+import ProfilePostCard from "../components/Users/ProfilePostCard";
+import PostModal from "../components/Posts/PostModal";
+import CreatePostModal from "../components/Users/CreatePostModal";
+import ProfileImageUpload from "../components/Users/ProfileImageUpload";
+import "../css/Users.css";
 
 type User = {
   id: string;
   username: string;
-}
+};
 
 export default function UserPage() {
   const { currentUser } = useContext(CurrentUserContext);
@@ -22,9 +24,15 @@ export default function UserPage() {
   const [showModal, setShowModal] = useState(false);
   const [newPostModal, setNewPostModal] = useState(false);
   const [errorText, setErrorText] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
+  const [images, setImages] = useState<string[]>([]);
+  const [reservations, setReservations] = useState<string[]>([]);
   const { id } = useParams();
 
   if (!currentUser) return <Navigate to="/login" />;
+
   const isCurrentUserProfile = currentUser && Number(currentUser.id) === Number(id);
 
   useEffect(() => {
@@ -36,15 +44,16 @@ export default function UserPage() {
         }
         setUserProfile(user);
       }
-    }
+    };
     loadUser();
   }, [id]);
 
+  const fetchUserPosts = async () => {
+    const data = await fetchHandler(`/api/v1/posts?user=${id}`);
+    setUserPosts(data);
+  };
+
   useEffect(() => {
-    const fetchUserPosts = async () => {
-      const data = await fetchHandler(`/api/v1/posts?user=${id}`);
-      setUserPosts(data);
-    };
     fetchUserPosts();
   }, [id]);
 
@@ -62,28 +71,88 @@ export default function UserPage() {
     setNewPostModal(true);
   };
 
+  const handleReservation = async (
+    event: React.FormEvent<HTMLFormElement>,
+    reservationId: number
+  ) => {
+    event.preventDefault();
+    await fetchHandler(`/api/v1/reservations/${reservationId}/select`, getPostOptions({}));
+  };
+
   return (
     <>
-      <br />
-      <h1>{profileUsername}'s Posts</h1>
-      <br />
-      <Button variant="outline-dark" onClick={showPostForm}>Create New Post</Button>
-      <br />
-      <Container className="posts">
-        {userPosts.map((postOrArray, index) => {
-          if (Array.isArray(postOrArray)) {
-            return (
-              <Row key={index}>
-                {postOrArray.map((post) => (
-                  <PostCard post={post} onClick={handleCardClick} key={post.id} />
-                ))}
-              </Row>
-            );
-          }
-        })}
+      <Container className="mt-4">
+        <Row>
+          <Col className="userProfile">
+            {id && userProfile && <ProfileImageUpload userId={id} />}
+            <h3>Username: {profileUsername}</h3>
+            <div className="simpleLine"></div>
+            <div>
+              <button className="edit-profile">Edit Profile</button>
+            </div>
+            <div>
+              <button className="delete-profile">Delete</button>
+            </div>
+          </Col>
+
+          <Col className="col-md-8">
+            <div className="userContent">
+              <h2 className="profile-h2">Profile</h2>
+              <button type="button" className="create-post" onClick={showPostForm}>
+                Create New Post
+              </button>
+            </div>
+            <div className="seperater"></div>
+            <Container className="usersPost">
+              {userPosts.map((postOrArray, index) => {
+                if (Array.isArray(postOrArray)) {
+                  return (
+                    <Row key={index}>
+                      {postOrArray.map((post) => (
+                        <ProfilePostCard
+                          key={post.id}
+                          post={post}
+                          onClick={handleCardClick}
+                          title={title}
+                          description={description}
+                          location={location}
+                          setTitle={setTitle}
+                          setDescription={setDescription}
+                          setLocation={setLocation}
+                          selectedPost={selectedPost!}
+                        />
+                      ))}
+                    </Row>
+                  );
+                }
+              })}
+            </Container>
+          </Col>
+        </Row>
       </Container>
-      <UsersPostModal show={showModal} post={selectedPost} onHide={() => setShowModal(false)} />
-      <CreatePost show={newPostModal} onHide={() => setNewPostModal(false)} />
+
+      <PostModal
+        post={selectedPost}
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        handleReservation={handleReservation}
+      />
+
+      <CreatePostModal
+        show={newPostModal}
+        onHide={() => setNewPostModal(false)}
+        title={title}
+        setTitle={setTitle}
+        description={description}
+        setDescription={setDescription}
+        location={location}
+        setLocation={setLocation}
+        images={images}
+        setImages={setImages}
+        reservations={reservations}
+        setReservations={setReservations}
+        onPostCreated={fetchUserPosts}
+      />
       <footer className="footer fixed-bottom">
         <p className="footer-p text-center">&copy; 2024 Copyright: Ink</p>
       </footer>
