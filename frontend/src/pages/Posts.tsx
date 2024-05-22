@@ -7,6 +7,7 @@ import PostModal from "../components/Posts/PostModal";
 import { Post } from "../utils/TypeProps";
 import FilterComponent from "../components/FilterComponent";
 import CurrentUserContext from "../context/CurrentUserContext";
+import ReservationToast from "../components/Posts/ReservationToasts";
 import "../css/Posts.css";
 
 const Posts = () => {
@@ -19,6 +20,7 @@ const Posts = () => {
   const { currentUser } = useContext(CurrentUserContext);
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [showReservationToast, setShowReservationToast] = useState(false);
 
   const fetchPosts = async () => {
     const data = await fetchHandler(`/api/v1/posts?q=${searchTerm}&limit=${limit}&order=${order}`);
@@ -65,16 +67,26 @@ const Posts = () => {
       return;
     }
     await fetchHandler(`/api/v1/reservations/${reservationId}/select`, getPostOptions({}));
+    setShowReservationToast(true);
     fetchPosts();
   };
 
   return (
     <>
       {alertVisible && (
-        <Alert style={{textAlign: "center"}} variant="danger" onClose={() => setAlertVisible(false)} dismissible>
+        <Alert
+          style={{ textAlign: "center" }}
+          variant="danger"
+          onClose={() => setAlertVisible(false)}
+          dismissible
+        >
           {alertMessage}
         </Alert>
       )}
+      <ReservationToast
+        showReservationToast={showReservationToast}
+        onClose={() => setShowReservationToast(false)}
+      />
       <h1 className="posts-h1">Explore Posts</h1>
       <Container className="search mt-4">
         <SearchBar searchTerm={searchTerm} onSearchInputChange={handleSearchInputChange} />

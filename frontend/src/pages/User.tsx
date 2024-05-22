@@ -8,7 +8,7 @@ import { Post } from "../utils/TypeProps";
 import ProfilePostCard from "../components/Users/ProfilePostCard";
 import PostModal from "../components/Posts/PostModal";
 import CreatePostModal from "../components/Users/CreatePostModal";
-import ProfileImageUpload from "../components/Users/ProfileImageUpload";
+import ProfileImage from "../components/Users/ProfileImage";
 import "../css/Users.css";
 
 type User = {
@@ -84,7 +84,7 @@ export default function UserPage() {
       <Container className="mt-4">
         <Row>
           <Col className="userProfile">
-            {id && userProfile && <ProfileImageUpload userId={id} />}
+            {id && userProfile && <ProfileImage userId={id} />}
             <h3>Username: {profileUsername}</h3>
             <div className="simpleLine"></div>
             <div>

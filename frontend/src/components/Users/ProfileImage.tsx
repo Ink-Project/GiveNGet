@@ -1,6 +1,7 @@
 import { fetchHandler } from "../../utils/utils";
 import { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
+import profile from "../../images/profile.svg"
 
 type ProfileImageUploadProps = {
   userId: string;
@@ -22,7 +23,7 @@ const ProfileImageUpload: React.FC<ProfileImageUploadProps> = ({ userId }) => {
   return (
     <Container>
       <div className="profile-image-container">
-        <img src={imageUrl || ''} alt="Profile Image" className="rounded-circle" />
+        <img src={imageUrl || profile} alt="Profile Image" />
       </div>
     </Container>
   );
