@@ -1,7 +1,7 @@
 import express from "express";
 import { z } from "zod";
 import { isAuthorized } from "../utils/auth";
-import { Post, Reservation } from "../models";
+import { Post } from "../models";
 import { checkAuthentication } from "../utils/auth";
 
 const postRouter: express.Router = express.Router();
@@ -11,7 +11,7 @@ const postCreate = z.object({
   description: z.string().max(255),
   location: z.string().max(255),
   images: z.string().url().array(),
-  pickup_times: z.coerce.date().array(),
+  pickup_times: z.coerce.date().array().min(1),
 });
 
 const postGet = z.object({
@@ -25,16 +25,6 @@ const postGet = z.object({
 
 const postUpdate = postCreate.omit({ images: true, pickup_times: true });
 
-const getAuxPostInfo = async (post?: Post.Post): Promise<Post.PostWithInfo | undefined> => {
-  return post
-    ? {
-        ...post,
-        images: await Post.imagesFor(post.id),
-        reservations: await Reservation.byPostForClient(post.id),
-      }
-    : undefined;
-};
-
 postRouter.post("/", checkAuthentication, async (req, res) => {
   const body = await postCreate.safeParseAsync(req.body);
   if (!body.success) {
@@ -47,7 +37,7 @@ postRouter.post("/", checkAuthentication, async (req, res) => {
     body.data.description,
     body.data.location,
     body.data.images,
-    body.data.pickup_times
+    body.data.pickup_times,
   );
   if (!post) {
     return res.sendStatus(500);
@@ -64,7 +54,7 @@ postRouter.get("/", async (req, res) => {
 
   const { q, limit, offset, user, include_closed, order } = query.data;
   const posts = await Post.list(q, limit, offset, user, include_closed, order);
-  res.send(await Promise.all(posts.map(getAuxPostInfo)));
+  res.send(await Promise.all(posts.map(Post.getRichPost)));
 });
 
 postRouter.get("/:id", async (req, res) => {
@@ -78,7 +68,7 @@ postRouter.get("/:id", async (req, res) => {
     return res.sendStatus(404);
   }
 
-  res.send(await getAuxPostInfo(post));
+  res.send(await Post.getRichPost(post));
 });
 
 postRouter.patch("/:id", checkAuthentication, async (req, res) => {
@@ -105,7 +95,7 @@ postRouter.patch("/:id", checkAuthentication, async (req, res) => {
     return res.sendStatus(501);
   }
 
-  res.send(await getAuxPostInfo(updated));
+  res.send(await Post.getRichPost(updated));
 });
 
 postRouter.post("/:id/close", checkAuthentication, async (req, res) => {
@@ -121,7 +111,7 @@ postRouter.post("/:id/close", checkAuthentication, async (req, res) => {
     return res.sendStatus(501);
   }
 
-  res.send(await getAuxPostInfo(updated));
+  res.send(await Post.getRichPost(updated));
 });
 
 export default postRouter;

@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export type Post = RowType<typeof posts>;
 
-export type PostWithInfo = Post & {
+export type RichPost = Post & {
   images: string[];
   reservations: ReturnType<typeof Reservation.clientFilter>;
 };
@@ -42,24 +42,24 @@ export const create = async (
   location: string,
   image_urls: string[],
   pickup_times: Date[],
-): Promise<PostWithInfo | undefined> => {
+): Promise<RichPost | undefined> => {
   const post = await posts
     .insert()
     .value({ title, description, location, user_id: creatorId })
+    .returning()
     .exec()
-    .then((p) => p[0]);
+    .then((p) => p[0] as Post | undefined);
   if (!post) {
     return;
   }
 
-  // TODO: use one query to add all at the same time
   const urls = (await Promise.allSettled(image_urls.map(processImage)))
     .filter((img) => {
       if (img.status === "fulfilled") {
         return img;
       }
       // TODO: maybe indicate in the response somehow if images fail to be uploaded
-      console.log(`Image process error: ${img.reason}`);
+      console.warn(`Image process error: ${img.reason}`);
     })
     .map((img) => ({ url: (img as PromiseFulfilledResult<string>).value, post_id: post.id }));
 
@@ -67,10 +67,11 @@ export const create = async (
     ...post,
     images: await images
       .insert()
+      .returning(["url"])
       .values(urls)
       .exec()
       .then((e) => e.map((e) => e.url)),
-    reservations: Reservation.clientFilter(await Reservation.create(pickup_times, post.id)),
+    reservations: await Reservation.create(pickup_times, post.id).then(Reservation.clientFilter),
   };
 };
 
@@ -116,7 +117,15 @@ export const deleteAll = async () => {
 
 export const close = (self: Post) => posts.update(self, { closed: true });
 
-export const imagesFor = async (post_id: number) => {
+const imagesFor = async (post_id: number) => {
   const r = await images.select(["url"]).where({ post_id }).exec();
   return r.map((r_1) => r_1.url);
+};
+
+export const getRichPost = async (post: Post): Promise<RichPost | undefined> => {
+  return {
+    ...post,
+    images: await imagesFor(post.id),
+    reservations: await Reservation.byPostForClient(post.id),
+  };
 };

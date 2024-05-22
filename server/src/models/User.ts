@@ -27,7 +27,7 @@ const users = table(
 );
 
 const hashPassword = (plaintext: string) =>
-  bcrypt.hash(plaintext, 10).catch((err) => console.log(err.message));
+  bcrypt.hash(plaintext, 10).catch((err) => console.warn(err.message));
 
 export const list = () => users.select().exec();
 
@@ -54,8 +54,9 @@ export const create = async (username: string, password: string, full_name?: str
   return await users
     .insert()
     .value({ username, password: hashed, full_name })
+    .returning()
     .exec()
-    .then((u) => u[0]);
+    .then((u) => u[0] as User | undefined);
 };
 
 export const update = async (

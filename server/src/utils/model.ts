@@ -123,11 +123,14 @@ class Insert<
   S extends z.ZodObject<T, U, C, O, I>,
   F extends (_data: Partial<O>) => unknown,
   P extends (keyof O)[] | undefined,
+  R extends (keyof O)[] | undefined = undefined,
 > extends Query<T, U, C, O, I, S, F> {
   qvalues: unknown[] = [];
   placeholders: string = "";
+  returnKeys: R = undefined!;
+  ret: boolean = false;
 
-  constructor(table: Table<T, U, C, O, I, S, F>, private keys: P, private returning: boolean) {
+  constructor(table: Table<T, U, C, O, I, S, F>, private keys: P) {
     super(table);
   }
 
@@ -156,13 +159,28 @@ class Insert<
     return this;
   }
 
+  returning<NR extends (keyof O)[] | undefined>(keys?: NR) {
+    const self = this as unknown as Insert<T, U, C, O, I, S, F, P, NR>;
+    self.ret = true;
+    if (keys) {
+      self.returnKeys = keys;
+    }
+    return self;
+  }
+
   exec() {
+    type Row = R extends undefined ? Data<S> : Pick<Data<S>, NonNullable<R>[number]>;
+
+    if (!this.placeholders) {
+      return Promise.resolve([]);
+    }
+
     const keys = this.keys ?? this.table.rawKeys;
     const query = `
-      INSERT INTO ${this.table.name} (${keys.join(",")})
-      VALUES ${this.placeholders.slice(0, -2)}
-      ${this.returning ? "RETURNING *" : ""}`;
-    return this.table.queryMany(query, this.qvalues);
+        INSERT INTO ${this.table.name} (${keys.join(",")})
+        VALUES ${this.placeholders.slice(0, -2)}
+        ${this.ret ? `RETURNING ${this.returnKeys ? this.returnKeys.join(", ") : "*"}` : ""}`;
+    return this.table.queryMany(query, this.qvalues) as Promise<Row[]>;
   }
 }
 
@@ -246,8 +264,8 @@ export class Table<
     return new Select(this, keys);
   }
 
-  insert<P extends (keyof Data<S>)[] | undefined>(returning = true, keys?: P) {
-    return new Insert(this, keys, returning);
+  insert<P extends (keyof Data<S>)[] | undefined>(keys?: P) {
+    return new Insert(this, keys);
   }
 
   /** Clear all entries in this table and reset the primary key sequence */

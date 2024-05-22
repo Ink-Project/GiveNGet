@@ -25,8 +25,9 @@ export const clientFilter = (
 
 export const create = (times: Date[], post_id: number) => {
   return rsvs
-    .insert(true, ["post_id", "pickup_time"])
+    .insert(["post_id", "pickup_time"])
     .values(times.map((pickup_time) => ({ post_id, pickup_time })))
+    .returning()
     .exec();
 };
 
@@ -53,7 +54,7 @@ export const select = async (self: Reservation, poster: number, userId: number) 
   }
 
   await events
-    .insert(false)
+    .insert()
     .values([
       { event: "reserved", post_id: data.post_id, user_id: userId, actor_id: userId },
       { event: "reserved", post_id: data.post_id, user_id: poster, actor_id: userId },
@@ -70,7 +71,7 @@ export const cancel = async (self: Reservation, poster: number, userId: number) 
   }
 
   await events
-    .insert(false)
+    .insert()
     .values([
       { event: "cancelled", post_id: data.post_id, user_id: userId, actor_id: userId },
       { event: "cancelled", post_id: data.post_id, user_id: poster, actor_id: userId },
