@@ -16,6 +16,7 @@ type PostCardProps = {
   setDescription: React.Dispatch<React.SetStateAction<string>>;
   setLocation: React.Dispatch<React.SetStateAction<string>>;
   selectedPost?: Post;
+  onDelete: () => void;
 };
 
 const ProfilePostCard: React.FC<PostCardProps> = ({
@@ -27,6 +28,7 @@ const ProfilePostCard: React.FC<PostCardProps> = ({
   setTitle,
   setDescription,
   setLocation,
+  onDelete
 }) => {
   const [editModal, setEditModal] = useState(false);
 
@@ -37,6 +39,7 @@ const ProfilePostCard: React.FC<PostCardProps> = ({
 
   const handlePostRemoval = async () => {
     await fetchHandler(`/api/v1/posts/${post.id}/close`, getPostOptions({}));
+    onDelete()
   };
   
   const handlePostEdit = () => {

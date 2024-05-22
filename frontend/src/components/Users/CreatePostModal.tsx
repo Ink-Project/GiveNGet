@@ -2,6 +2,7 @@ import React from "react";
 import { Modal, Container, Row } from "react-bootstrap";
 import { fetchHandler } from "../../utils/utils";
 import { getPostOptions } from "../../utils/utils";
+import { useEffect } from "react";
 
 type CreatePostModalProps = {
   show: boolean;
@@ -46,6 +47,11 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     await fetchHandler("/api/v1/posts/", getPostOptions(postFormData));
     onPostCreated();
     onHide();
+    setTitle("");
+    setDescription("");
+    setLocation("");
+    setImages([]);
+    setReservations([]);
   };
 
   async function bytesToBase64DataUrl(bytes: Uint8Array, type: string) {
