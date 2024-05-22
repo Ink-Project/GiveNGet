@@ -1,6 +1,6 @@
-import { Event } from "../models";
 import table, { RowType } from "../utils/model";
 import { z } from "zod";
+import { events } from "./Event";
 
 export type Reservation = RowType<typeof rsvs>;
 
@@ -23,14 +23,11 @@ export const clientFilter = (
     .map((data) => ({ id: data!.id, pickup_time: data!.pickup_time, free: !data!.user_id }));
 };
 
-export const create = (times: Date[], postId: number) => {
-  return rsvs.queryMany(
-    `
-    INSERT INTO ${rsvs.name} (post_id, pickup_time)
-    VALUES ${"(?, ?), ".repeat(times.length).slice(0, -2)}
-    RETURNING *`,
-    times.flatMap((time) => [postId, time]),
-  );
+export const create = (times: Date[], post_id: number) => {
+  return rsvs
+    .insert(true, ["post_id", "pickup_time"])
+    .values(times.map((pickup_time) => ({ post_id, pickup_time })))
+    .exec();
 };
 
 export const byPost = (post_id: number) => rsvs.select().where({ post_id }).exec();
@@ -55,9 +52,13 @@ export const select = async (self: Reservation, poster: number, userId: number) 
     return;
   }
 
-  // TODO: create these together in one query
-  await Event.create("reserved", data.post_id, userId, userId);
-  await Event.create("reserved", data.post_id, poster, userId);
+  await events
+    .insert(false)
+    .values([
+      { event: "reserved", post_id: data.post_id, user_id: userId, actor_id: userId },
+      { event: "reserved", post_id: data.post_id, user_id: poster, actor_id: userId },
+    ])
+    .exec();
   return data;
 };
 
@@ -68,9 +69,13 @@ export const cancel = async (self: Reservation, poster: number, userId: number) 
     return;
   }
 
-  // TODO: create these together in one query
-  await Event.create("cancelled", data.post_id, userId, userId);
-  await Event.create("cancelled", data.post_id, poster, userId);
+  await events
+    .insert(false)
+    .values([
+      { event: "cancelled", post_id: data.post_id, user_id: userId, actor_id: userId },
+      { event: "cancelled", post_id: data.post_id, user_id: poster, actor_id: userId },
+    ])
+    .exec();
   return data;
 };
 

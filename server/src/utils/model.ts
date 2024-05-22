@@ -8,9 +8,9 @@ if (process.env.DB_VALIDATION) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type RowType<M extends Table<any, any, any, any, any, any, any>> = Required<
-  Parameters<M["update"]>[0]
->;
+export type RowType<M extends Table<any, any, any, any, any, any, any>> = Parameters<
+  M["update"]
+>[0];
 
 type Data<S extends z.ZodTypeAny> = Required<z.infer<S>>;
 
@@ -23,7 +23,7 @@ abstract class Query<
   S extends z.ZodObject<T, U, C, O, I>,
   F extends (_data: Partial<O>) => unknown,
 > {
-  constructor(protected model: Table<T, U, C, O, I, S, F>) {}
+  constructor(protected table: Table<T, U, C, O, I, S, F>) {}
 
   abstract exec(): Promise<unknown>;
 }
@@ -43,8 +43,8 @@ class Select<
   private qoffset?: number;
   private qorderBy?: [keyof O, "asc" | "desc"];
 
-  constructor(model: Table<T, U, C, O, I, S, F>, private keys: P) {
-    super(model);
+  constructor(table: Table<T, U, C, O, I, S, F>, private keys: P) {
+    super(table);
   }
 
   where(items: { [K in keyof O]?: Comparator<O[K]> }) {
@@ -70,7 +70,7 @@ class Select<
   exec() {
     type Row = P extends undefined ? Data<S> : Pick<Data<S>, NonNullable<P>[number]>;
 
-    let query = `SELECT ${this.keys ? this.keys.join(", ") : "*"} from ${this.model.name}`;
+    let query = `SELECT ${this.keys ? this.keys.join(", ") : "*"} from ${this.table.name}`;
     let i = 0;
     const values = [];
     for (const k in this.qwhere) {
@@ -110,7 +110,59 @@ class Select<
       values.push(this.qoffset);
     }
 
-    return this.model.queryMany(query, values) as Promise<Row[]>;
+    return this.table.queryMany(query, values) as Promise<Row[]>;
+  }
+}
+
+class Insert<
+  T extends z.ZodRawShape,
+  U extends z.UnknownKeysParam,
+  C extends z.ZodTypeAny,
+  O extends object,
+  I extends object,
+  S extends z.ZodObject<T, U, C, O, I>,
+  F extends (_data: Partial<O>) => unknown,
+  P extends (keyof O)[] | undefined,
+> extends Query<T, U, C, O, I, S, F> {
+  qvalues: unknown[] = [];
+  placeholders: string = "";
+
+  constructor(table: Table<T, U, C, O, I, S, F>, private keys: P, private returning: boolean) {
+    super(table);
+  }
+
+  value(row: P extends undefined ? O : Pick<O, NonNullable<P>[number]>) {
+    let query = "";
+    for (const k of this.keys ?? this.table.rawKeys) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const val = (row as Record<any, any>)[k];
+      if (val !== undefined) {
+        this.qvalues.push(val);
+        query += "?, ";
+      } else {
+        query += "DEFAULT, ";
+      }
+    }
+    if (query) {
+      this.placeholders += `(${query.slice(0, -2)}), `;
+    }
+    return this;
+  }
+
+  values(rows: Parameters<typeof this.value>[0][]) {
+    for (const row of rows) {
+      this.value(row);
+    }
+    return this;
+  }
+
+  exec() {
+    const keys = this.keys ?? this.table.rawKeys;
+    const query = `
+      INSERT INTO ${this.table.name} (${keys.join(",")})
+      VALUES ${this.placeholders.slice(0, -2)}
+      ${this.returning ? "RETURNING *" : ""}`;
+    return this.table.queryMany(query, this.qvalues);
   }
 }
 
@@ -124,6 +176,7 @@ export class Table<
   F extends (_data: Partial<O>) => unknown,
 > {
   readonly schema: ReturnType<S["required"]>;
+  readonly rawKeys: (keyof typeof this.schema)[] = [];
 
   constructor(
     public readonly name: string,
@@ -134,22 +187,21 @@ export class Table<
     // TODO: get rid of this
     // @ts-expect-error 2322
     this.schema = schema.required();
+    this.rawKeys = Object.keys(this.schema.shape) as (keyof typeof this.schema)[];
   }
 
   fromRowUnchecked(data: unknown) {
-    return (this.transform && data ? this.transform(data as Data<S>) : data) as
-      | (F extends unknown ? Data<S> : ReturnType<F>)
-      | undefined;
+    return (this.transform && data ? this.transform(data as Data<S>) : data) as F extends unknown
+      ? Data<S>
+      : ReturnType<F>;
   }
 
   fromRowSafe(data: unknown) {
     const res = this.schema.safeParse(data);
-    if (res.success) {
-      return this.fromRowUnchecked(res.data);
-    } else {
-      console.log("Row returned from database did not pass validation:", data);
-      return;
+    if (!res.success) {
+      throw new Error(`Row returned from database did not pass validation: ${data}`);
     }
+    return this.fromRowUnchecked(res.data);
   }
 
   /**
@@ -174,17 +226,6 @@ export class Table<
     return (await this.raw(sql, binding)).map((r) => this.fromRow(r));
   }
 
-  /** Create an instance of this resource. */
-  async create(data: O) {
-    // data keys are server controlled, sql injection doesn't matter here
-    const values = Object.values(data);
-    const query = `
-            INSERT INTO ${this.name} (${Object.keys(data).join(", ")})
-            VALUES (${"?, ".repeat(values.length).slice(0, -2)})
-            RETURNING *`;
-    return this.queryOne(query, values);
-  }
-
   /** Update this instance of this resource. */
   async update(self: Data<S>, data: Partial<O>) {
     // data keys are server controlled, sql injection doesn't matter here
@@ -203,6 +244,10 @@ export class Table<
 
   select<P extends (keyof Data<S>)[] | undefined>(keys?: P) {
     return new Select(this, keys);
+  }
+
+  insert<P extends (keyof Data<S>)[] | undefined>(returning = true, keys?: P) {
+    return new Insert(this, keys, returning);
   }
 
   /** Clear all entries in this table and reset the primary key sequence */

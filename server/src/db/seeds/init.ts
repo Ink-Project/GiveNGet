@@ -49,7 +49,7 @@ export const seed = async () => {
   );
 
   let [rev] = await Reservation.byPost(first!.id);
-  rev = await Reservation.select(rev!, first!.user_id, leet_guy.id);
-  rev = await Reservation.cancel(rev!, first!.user_id, leet_guy.id);
+  rev = (await Reservation.select(rev, first!.user_id, leet_guy.id))!;
+  rev = (await Reservation.cancel(rev, first!.user_id, leet_guy.id))!;
   await Reservation.select(rev!, first!.user_id, wowow.id);
 };

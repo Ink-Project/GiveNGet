@@ -25,42 +25,51 @@ const posts = table(
   }),
 );
 
+const images = table(
+  "images",
+  "id",
+  z.object({
+    id: z.number().optional(),
+    url: z.string(),
+    post_id: z.number(),
+  }),
+);
+
 export const create = async (
   creatorId: number,
   title: string,
   description: string,
   location: string,
-  images: string[],
+  image_urls: string[],
   pickup_times: Date[],
 ): Promise<PostWithInfo | undefined> => {
-  const post = await posts.create({
-    title,
-    description,
-    location,
-    user_id: creatorId,
-    closed: false,
-  });
+  const post = await posts
+    .insert()
+    .value({ title, description, location, user_id: creatorId })
+    .exec()
+    .then((p) => p[0]);
   if (!post) {
     return;
   }
 
-  const resImages: string[] = [];
   // TODO: use one query to add all at the same time
-  for (const image of await Promise.allSettled(images.map(processImage))) {
-    if (image.status === "fulfilled") {
-      const res = await Image.create(image.value, post.id);
-      if (res) {
-        resImages.push(res.url);
+  const urls = (await Promise.allSettled(image_urls.map(processImage)))
+    .filter((img) => {
+      if (img.status === "fulfilled") {
+        return img;
       }
-    } else {
       // TODO: maybe indicate in the response somehow if images fail to be uploaded
-      console.log(`Image process error: ${image.reason}`);
-    }
-  }
+      console.log(`Image process error: ${img.reason}`);
+    })
+    .map((img) => ({ url: (img as PromiseFulfilledResult<string>).value, post_id: post.id }));
 
   return {
     ...post,
-    images: resImages,
+    images: await images
+      .insert()
+      .values(urls)
+      .exec()
+      .then((e) => e.map((e) => e.url)),
     reservations: Reservation.clientFilter(await Reservation.create(pickup_times, post.id)),
   };
 };
@@ -101,30 +110,13 @@ export const update = (self: Post, title: string, description: string, location:
 };
 
 export const deleteAll = async () => {
-  await Image.deleteAll();
+  await images.deleteAll();
   await posts.deleteAll();
 };
 
 export const close = (self: Post) => posts.update(self, { closed: true });
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace Image {
-  const images = table(
-    "images",
-    "id",
-    z.object({
-      id: z.number().optional(),
-      url: z.string(),
-      post_id: z.number(),
-    }),
-  );
-
-  export const create = (url: string, postId: number) => images.create({ url, post_id: postId });
-
-  export const byPost = async (post_id: number) => {
-    const r = await images.select(["url"]).where({ post_id }).exec();
-    return r.map((r_1) => r_1.url);
-  };
-
-  export const deleteAll = () => images.deleteAll();
-}
+export const imagesFor = async (post_id: number) => {
+  const r = await images.select(["url"]).where({ post_id }).exec();
+  return r.map((r_1) => r_1.url);
+};

@@ -51,7 +51,11 @@ export const create = async (username: string, password: string) => {
     return;
   }
 
-  return await users.create({ username, password: hashed });
+  return await users
+    .insert()
+    .value({ username, password: hashed })
+    .exec()
+    .then((u) => u[0]);
 };
 
 export const update = async (

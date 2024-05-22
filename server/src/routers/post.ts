@@ -29,7 +29,7 @@ const getAuxPostInfo = async (post?: Post.Post): Promise<Post.PostWithInfo | und
   return post
     ? {
         ...post,
-        images: await Post.Image.byPost(post.id),
+        images: await Post.imagesFor(post.id),
         reservations: await Reservation.byPostForClient(post.id),
       }
     : undefined;
