@@ -9,6 +9,7 @@ import ProfilePostCard from "../components/Users/ProfilePostCard";
 import PostModal from "../components/Posts/PostModal";
 import CreatePostModal from "../components/Users/CreatePostModal";
 import ProfileImage from "../components/Users/ProfileImage";
+import EditProfile from "../components/Users/EditProfile";
 import "../css/Users.css";
 
 type User = {
@@ -87,12 +88,7 @@ export default function UserPage() {
             {id && userProfile && <ProfileImage userId={id} />}
             <h3>Username: {profileUsername}</h3>
             <div className="simpleLine"></div>
-            <div>
-              <button className="edit-profile">Edit Profile</button>
-            </div>
-            <div>
-              <button className="delete-profile">Delete</button>
-            </div>
+            <EditProfile />
           </Col>
 
           <Col className="col-md-8">
@@ -153,7 +149,7 @@ export default function UserPage() {
         setReservations={setReservations}
         onPostCreated={fetchUserPosts}
       />
-      <footer className="footer fixed-bottom">
+      <footer className="footer">
         <p className="footer-p text-center">&copy; 2024 Copyright: Ink</p>
       </footer>
     </>
