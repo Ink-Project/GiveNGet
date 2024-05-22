@@ -38,6 +38,7 @@ const ProfilePostCard: React.FC<PostCardProps> = ({
   const handlePostRemoval = async () => {
     await fetchHandler(`/api/v1/posts/${post.id}/close`, getPostOptions({}));
   };
+  
   const handlePostEdit = () => {
     showEditForm();
   };
