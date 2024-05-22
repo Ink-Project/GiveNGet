@@ -23,6 +23,9 @@ const userUpdate = z.object({
   full_name: z.string().optional(),
 });
 
+export type UserCreateParams = z.infer<typeof userCreate>;
+export type UserUpdateParams = z.infer<typeof userUpdate>;
+
 userRouter.post("/", async (req, res) => {
   const body = await userCreate.safeParseAsync(req.body);
   if (!body.success) {

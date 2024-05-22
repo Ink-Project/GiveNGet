@@ -10,6 +10,8 @@ const userLogin = z.object({
   password: z.string().max(255),
 });
 
+export type UserLoginParams = z.infer<typeof userLogin>;
+
 // This controller returns 401 if the client is NOT logged in (doesn't have a cookie)
 // or returns the user based on the userId stored on the client's cookie
 authRouter.get("/me", async (req, res) => {

@@ -25,6 +25,10 @@ const postGet = z.object({
 
 const postUpdate = postCreate.omit({ images: true, pickup_times: true });
 
+export type PostCreateParams = z.infer<typeof postCreate>;
+export type PostGetParams    = z.infer<typeof postGet>;
+export type PostUpdateParams = z.infer<typeof postUpdate>;
+
 postRouter.post("/", checkAuthentication, async (req, res) => {
   const body = await postCreate.safeParseAsync(req.body);
   if (!body.success) {
