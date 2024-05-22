@@ -5,6 +5,7 @@ import SearchBar from "../components/Posts/SearchBar";
 import PostCard from "../components/Posts/PostCard";
 import PostModal from "../components/Posts/PostModal";
 import { Post } from "../utils/TypeProps";
+import FilterComponent from "../components/FilterComponent";
 import "../css/Posts.css";
 
 const Posts = () => {
@@ -12,15 +13,25 @@ const Posts = () => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [order, setOrder] = useState("asc")
+  const [limit, setLimit] = useState(10)
 
   const fetchPosts = async () => {
-    const data = await fetchHandler(`/api/v1/posts?q=${searchTerm}`);
+    const data = await fetchHandler(`/api/v1/posts?q=${searchTerm}&limit=${limit}&order=${order}`);
     setPosts(data);
   };
 
   useEffect(() => {
     fetchPosts();
-  }, [searchTerm]);
+  }, [searchTerm, order, limit]);
+
+  const handleOrderChange = (order: string) => {
+    setOrder(order);
+  };
+
+  const handleLimitChange = (limit: number) => {
+    setLimit(limit);
+  };
 
   const handleCardClick = (post: Post) => {
     setSelectedPost(post);
@@ -46,6 +57,7 @@ const Posts = () => {
       <Container className="search mt-4">
         <SearchBar searchTerm={searchTerm} onSearchInputChange={handleSearchInputChange} />
       </Container>
+      <FilterComponent onOrderChange={handleOrderChange} onLimitChange={handleLimitChange} />
       <Container className="posts mt-4">
         {posts.map((postOrArray, index) => {
           if (Array.isArray(postOrArray)) {
