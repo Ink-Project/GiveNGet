@@ -5,18 +5,20 @@ const baseUrl = "/api/v1/users";
 
 type User = {
   id: string;
+  fullName: string;
   username: string;
 };
 
 type CreateUserParams = {
+  full_name: string;
   username: string;
   password: string;
 };
 
 // Creates a new user with the provided username and password.
-export const createUser = async ({ username, password }: CreateUserParams): Promise<any> => (
-  fetchHandler(baseUrl, getPostOptions({ username, password }))
-);
+export const createUser = async ({ full_name, username, password }: CreateUserParams): Promise<any> => {
+  return fetchHandler(baseUrl, getPostOptions({ full_name, username, password }));
+};
 
 // Retrieves all users
 export const getAllUsers = async (): Promise<User[]> => {

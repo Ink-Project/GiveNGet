@@ -18,18 +18,18 @@ const NavBar = () => {
   };
 
   return (
-    <Navbar className="white shadow-lg">
+    <Navbar className="sticky-top" style={{ backgroundColor: '#0D5C63' }}>
       <Container>
         <Navbar.Brand to="/" as={NavLink}>
           <img className="logo" src={logo} alt="Logo" height="60" width="100%" />
         </Navbar.Brand>
         <Nav className="ms-auto align-items-center">
-        <Nav.Link to="/posts" as={NavLink}>
+        <Nav.Link to="/posts" as={NavLink} style={{ color: 'orange', fontSize: "18px", fontWeight: "bold"}}>
                 Posts
               </Nav.Link>
           {currentUser ? (
             <>
-              <Nav.Link to="/inbox" as={NavLink}>
+              <Nav.Link to="/inbox" as={NavLink} style={{color: 'orange', fontSize: "18px", fontWeight: "bold" }}>
                 Inbox
               </Nav.Link>
               <Dropdown>
@@ -37,10 +37,10 @@ const NavBar = () => {
                   <img style={{ width: "3rem", height: "4rem" }} src={user} alt="user image" />
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item to={`/users/${id}`} as={NavLink}>
+                <Dropdown.Item to={`/users/${id}`} as={NavLink} style={{ color: 'orange', fontWeight: "bold" }}>
                     Profile
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={handleLogOut}>Logout</Dropdown.Item>
+                  <Dropdown.Item style={{ color: 'orange', fontWeight: "bold"}} onClick={handleLogOut}>Logout</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </>

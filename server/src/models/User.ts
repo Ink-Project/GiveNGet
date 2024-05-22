@@ -45,7 +45,7 @@ export const findByUsername = (username: string) =>
     .exec()
     .then((r) => r[0] as User | undefined);
 
-export const create = async (username: string, password: string) => {
+export const create = async (username: string, password: string, full_name?: string) => {
   const hashed = await hashPassword(password);
   if (!hashed) {
     return;
@@ -53,7 +53,7 @@ export const create = async (username: string, password: string) => {
 
   return await users
     .insert()
-    .value({ username, password: hashed })
+    .value({ username, password: hashed, full_name })
     .exec()
     .then((u) => u[0]);
 };

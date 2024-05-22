@@ -8,6 +8,7 @@ const userRouter: express.Router = express.Router();
 const userCreate = z.object({
   username: z.string().max(255).min(3),
   password: z.string().max(255).min(3),
+  full_name: z.string().max(255).min(3).optional(),
 });
 
 const userUpdate = z.object({
@@ -29,14 +30,15 @@ userRouter.post("/", async (req, res) => {
   }
 
   try {
-    const user = await User.create(body.data.username, body.data.password);
+    const user = await User.create(body.data.username, body.data.password, body.data.full_name);
     if (!user) {
       return res.sendStatus(500);
     }
 
     req.session!.userId = user!.id; // TODO: no !
     res.send(user);
-  } catch {
+  } catch (err) {
+    console.warn(err);
     return res.sendStatus(409);
   }
 });

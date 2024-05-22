@@ -1,6 +1,6 @@
-import TopComponentHome from "../components/Home-Component/TopComponentHome";
-import MiddleComponentHome from "../components/Home-Component/MiddleComponentHome";
-import BottomHomeComponent from "../components/Home-Component/BottomHomeComponent";
+import TopComponentHome from "../components/Home/TopComponentHome";
+import MiddleComponentHome from "../components/Home/MiddleComponentHome";
+import BottomHomeComponent from "../components/Home/BottomHomeComponent";
 import "../css/Landing.css"
 
 const Landing = () => {
