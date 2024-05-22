@@ -15,7 +15,7 @@ const Posts = () => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [order, setOrder] = useState("asc");
+  const [order, setOrder] = useState<"asc" | "desc">("desc");
   const [limit, setLimit] = useState(10);
   const { currentUser } = useContext(CurrentUserContext);
   const [alertVisible, setAlertVisible] = useState(false);
@@ -31,7 +31,7 @@ const Posts = () => {
     fetchPosts();
   }, [searchTerm, order, limit]);
 
-  const handleOrderChange = (order: string) => {
+  const handleOrderChange = (order: "asc" | "desc") => {
     setOrder(order);
   };
 

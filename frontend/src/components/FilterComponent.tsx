@@ -3,8 +3,8 @@ import { Container, Dropdown } from 'react-bootstrap';
 import filter from "../images/filter.svg"
 
 interface FilterComponentProps {
-  onOrderChange: (order: string) => any;
-  onLimitChange: (limit: number) => any;
+  onOrderChange: (order: "asc" | "desc") => void;
+  onLimitChange: (limit: number) => void;
 }
 
 const FilterComponent: React.FC<FilterComponentProps> = ({ onOrderChange, onLimitChange }) => {
@@ -17,8 +17,8 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ onOrderChange, onLimi
         </Dropdown.Toggle>
         <Dropdown.Menu>
           <Dropdown.Header>Sort Order</Dropdown.Header>
-          <Dropdown.Item onClick={() => onOrderChange('asc')}>Asc</Dropdown.Item>
-          <Dropdown.Item onClick={() => onOrderChange('desc')}>Desc</Dropdown.Item>
+          <Dropdown.Item onClick={() => onOrderChange('desc')}>Newest</Dropdown.Item>
+          <Dropdown.Item onClick={() => onOrderChange('asc')}>Oldest</Dropdown.Item>
           <Dropdown.Divider />
           <Dropdown.Header>Limit</Dropdown.Header>
           <Dropdown.Item onClick={() => onLimitChange(1)}>1</Dropdown.Item>
