@@ -75,6 +75,7 @@ export default function UserPage() {
    setNewPostModal(true)
  }
 
+
  const handleReservation = async (
   event: React.FormEvent<HTMLFormElement>,
   reservationId: number
@@ -94,17 +95,30 @@ export default function UserPage() {
      <button type="button" className ="btn btn-outline-dark" onClick={showPostForm}> Create New Post</button>
      <br />
      <Container className="posts mt-4">
-        {userPosts.map((postOrArray, index) => {
-          if (Array.isArray(postOrArray)) {
-            return (
-              <Row key={index}>
-                {postOrArray.map((post) => (
-                  <ProfilePostCard key={post.id} post={post} onClick={handleCardClick} />
-                ))}
-              </Row>
-            );
-          }
-        })}
+     {userPosts.map((postOrArray, index) => {
+  if (Array.isArray(postOrArray)) {
+    return (
+      <Row key={index}>
+        {postOrArray.map((post) => (
+          <ProfilePostCard
+  key={post.id}
+  post={post}
+  onClick={handleCardClick}
+  title={title}
+  description={description}
+  location={location}
+  setTitle={setTitle}
+  setDescription={setDescription}
+  setLocation = {setLocation}
+  selectedPost={selectedPost!}
+/>
+
+        ))}
+      </Row>
+    );
+  }
+})}
+
       </Container>
 
 

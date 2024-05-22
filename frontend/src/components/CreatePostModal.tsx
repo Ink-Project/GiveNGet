@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Modal, Container, Row } from "react-bootstrap";
 import { Post } from "../utils/TypeProps";
 import { fetchHandler } from "../utils/utils"; 
