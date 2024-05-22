@@ -37,7 +37,6 @@ const PostModal: React.FC<PostModalProps> = ({ post, show, onHide, handleReserva
                       src={`${window.location.origin}${image}`}
                       alt={`Image ${index + 1}`}
                       className="img-fluid"
-                      style={{ maxWidth: "100%", height: "15rem" }}
                     />
                   </Carousel.Item>
                 ))}
