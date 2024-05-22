@@ -5,10 +5,11 @@ import { Container } from "react-bootstrap";
 import CurrentUserContext from "../../context/CurrentUserContext";
 
 const EditProfileForm: React.FC = () => {
-  const [newFullName, setNewFullName] = useState<string>("");
-  const [newUserName, setNewUserName] = useState<string>("");
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
   const navigate = useNavigate();
+
+  const [newFullName, setNewFullName] = useState<string>(currentUser?.full_name || "");
+  const [newUserName, setNewUserName] = useState<string>(currentUser?.username || "");
 
   const handleUpdateProfile = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,7 +20,7 @@ const EditProfileForm: React.FC = () => {
     try {
       const [user, error] = await fetchHandler(
         `api/v1/users/${currentUser?.id}`,
-        getPatchOptions(data)
+        getPatchOptions(data),
       );
       if (error) {
         console.error("Failed to update profile:", error);
@@ -31,7 +32,7 @@ const EditProfileForm: React.FC = () => {
       console.error("Failed to update profile:", error);
     }
   };
-  
+
   const linkToProfile = () => {
     navigate(`/users/${currentUser?.id}`);
   };
@@ -41,20 +42,14 @@ const EditProfileForm: React.FC = () => {
       <h1>Edit Profile</h1>
       <form onSubmit={handleUpdateProfile}>
         <label>Full Name</label>
-        <input
-          type="text"
-          value={newFullName}
-          onChange={(e) => setNewFullName(e.target.value)}
-        />
+        <input type="text" value={newFullName} onChange={(e) => setNewFullName(e.target.value)} />
         <label>Username</label>
-        <input
-          type="text"
-          value={newUserName}
-          onChange={(e) => setNewUserName(e.target.value)}
-        />
+        <input type="text" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} />
         <button type="submit">Submit Update</button>
       </form>
-      <button className="link-to-profile" onClick={linkToProfile}>Back to Profile</button>
+      <button className="link-to-profile" onClick={linkToProfile}>
+        Back to Profile
+      </button>
     </Container>
   );
 };

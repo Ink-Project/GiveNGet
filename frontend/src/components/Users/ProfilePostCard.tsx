@@ -38,14 +38,14 @@ const ProfilePostCard: React.FC<PostCardProps> = ({
   const handlePostRemoval = async () => {
     await fetchHandler(`/api/v1/posts/${post.id}/close`, getPostOptions({}));
   };
-  
+
   const handlePostEdit = () => {
     showEditForm();
   };
 
   return (
-    <div className="col-md-3 mb-4" key={post.id}>
-      <Card>
+    <div className="userPostContainer" key={post.id}>
+      <Card className="size">
         <div onClick={() => onClick(post)} style={{ cursor: "pointer" }}>
           <Card.Img
             src={`${window.location.origin}${post.images[0]}`} // Display the first image

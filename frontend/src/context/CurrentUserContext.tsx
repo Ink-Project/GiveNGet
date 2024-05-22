@@ -3,6 +3,7 @@ import { createContext } from 'react';
 type User = {
   id: string;
   username: string;
+  full_name: string;
 };
 
 type ContextType = {

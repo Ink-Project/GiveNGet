@@ -1,5 +1,6 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Modal, Container, Row, Col, Carousel } from "react-bootstrap";
+import { fetchHandler } from "../../utils/utils";
 import { Post } from "../../utils/TypeProps";
 
 type PostModalProps = {
@@ -10,6 +11,16 @@ type PostModalProps = {
 };
 
 const PostModal: React.FC<PostModalProps> = ({ post, show, onHide, handleReservation }) => {
+  const [userName, setUserName] = useState("");
+
+  useEffect(()=> {
+    const loadUser = async () => {
+      const data = await fetchHandler(`/api/v1/users/${post?.user_id}`);
+      setUserName(data[0].full_name);
+    };
+    loadUser();
+  })
+
   return (
     <Modal show={show} onHide={onHide} centered size="lg">
       <Modal.Header closeButton>
@@ -50,7 +61,7 @@ const PostModal: React.FC<PostModalProps> = ({ post, show, onHide, handleReserva
                   ))}
               </div>
               <p>Location: {post?.location}</p>
-              <p>User ID: {post?.user_id}</p>
+              <p>Name: {userName}</p>
             </Col>
           </Row>
         </Container>

@@ -36,6 +36,10 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
 }) => {
   const handleNewPostSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (images.length === 0) {
+      alert("Please drop at least one image into the drop zone.");
+      return;
+    }
     const postFormData = {
       title,
       description,
@@ -102,6 +106,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   autoComplete="off"
+                  required
                 />
               </Row>
               <label htmlFor="description">Description:</label>
@@ -112,6 +117,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   autoComplete="off"
+                  required
                 />
               </Row>
               <label htmlFor="location">Location:</label>
@@ -122,6 +128,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   autoComplete="off"
+                  required
                 />
               </Row>
               <label htmlFor="image">Image:</label>
@@ -145,6 +152,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     type="datetime-local"
                     value={reservation}
                     onChange={(e) => handleDatetimeChange(index, e.target.value)}
+                    required
                   />
                 ))}
                 <button type="button" onClick={addDatetimeField}>
