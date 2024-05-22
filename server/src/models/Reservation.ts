@@ -4,7 +4,7 @@ import { events } from "./Event";
 
 export type Reservation = RowType<typeof rsvs>;
 
-const rsvs = table(
+export const rsvs = table(
   "reservation",
   "id",
   z.object({

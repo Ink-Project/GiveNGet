@@ -10,7 +10,7 @@ export type RichPost = Post & {
   reservations: ReturnType<typeof Reservation.clientFilter>;
 };
 
-const posts = table(
+export const posts = table(
   "posts",
   "id",
   z.object({

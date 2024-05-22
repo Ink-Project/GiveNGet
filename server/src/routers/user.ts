@@ -64,6 +64,23 @@ userRouter.get("/:id", async (req, res) => {
   res.send(user);
 });
 
+userRouter.delete("/:id", async (req, res) => {
+  const id = +req.params.id;
+  if (!id) {
+    return res.sendStatus(400);
+  }
+
+  const user = await User.find(id);
+  if (!user) {
+    return res.sendStatus(404);
+  } else if (!isAuthorized(user.id, req.session?.userId)) {
+    return res.sendStatus(403);
+  }
+
+  req.session = null;
+  return res.json(await User.closeAccount(user));
+});
+
 userRouter.patch("/:id", checkAuthentication, async (req, res) => {
   const id = +req.params.id;
   if (!isAuthorized(id, req.session?.userId)) {

@@ -75,7 +75,7 @@ class Select<
     const values = [];
     for (const k in this.qwhere) {
       const cmp = this.qwhere[k];
-      if (!cmp) {
+      if (cmp === undefined) {
         continue;
       } else if (!i) {
         query += " WHERE ";

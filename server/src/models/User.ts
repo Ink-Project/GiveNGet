@@ -2,6 +2,10 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 import table, { RowType } from "../utils/model";
 import { processImage } from "../utils/image";
+import { posts } from "./Post";
+import { rsvs } from "./Reservation";
+import { Post, Reservation } from ".";
+import { randomUUID } from "crypto";
 
 export type User = RowType<typeof users>;
 
@@ -88,6 +92,18 @@ export const update = async (
   }
 
   return await users.update(self, obj);
+};
+
+export const closeAccount = async (self: User) => {
+  await posts.raw(`UPDATE ${posts.name} SET closed=true WHERE id=${self.id}`, []);
+
+  // could do this in one query, but cancelling reservations does more than one thing,
+  // not much time rn
+  for (const resv of await rsvs.select().where({ user_id: self.id }).exec()) {
+    await Reservation.cancel(resv, (await Post.find(resv.post_id))!.user_id, self.id);
+  }
+
+  return await update(self, randomUUID(), "deleted", "Deleted User");
 };
 
 export const deleteAll = () => users.deleteAll();
