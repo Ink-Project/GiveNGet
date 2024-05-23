@@ -73,7 +73,7 @@ export default function UserPage() {
 
   const handleReservation = async (
     event: React.FormEvent<HTMLFormElement>,
-    reservationId: number
+    reservationId: number,
   ) => {
     event.preventDefault();
     await fetchHandler(`/api/v1/reservations/${reservationId}/select`, getPostOptions({}));
@@ -81,54 +81,52 @@ export default function UserPage() {
 
   return (
     <>
-<Container className="mt-4">
-  <Row>
-    <Col className="userProfile">
-      {id && userProfile && <ProfileImage userId={id} />}
-      <h3>Username: {profileUsername}</h3>
-      <div className="simpleLine"></div>
-      <EditProfile userId={currentUser.id}/>
-    </Col>
+      <Container className="mt-4">
+        <Row>
+          <Col className="userProfile">
+            {id && userProfile && <ProfileImage userId={id} />}
+            <h3>Username: {profileUsername}</h3>
+            <div className="simpleLine"></div>
+            <EditProfile userId={currentUser.id} />
+          </Col>
 
-    <Col className="col-md-9">
-      <div className="userContent">
-        <h2 className="profile-h2">Profile</h2>
-        <button type="button" className="create-post" onClick={showPostForm}>
-          Create New Post
-        </button>
-      </div>
-      <div className="seperater"></div>
-      <Container style={{ overflow: 'auto', maxHeight: '500px' }}>
-      {userPosts.map((postOrArray, index) => {
-        if (Array.isArray(postOrArray)) {
-          return (
-            <Row key={index}>
-              {postOrArray.map((post) => (
-                <Col className="hello" key={post.id}>
-                  <ProfilePostCard
-                    post={post}
-                    onClick={handleCardClick}
-                    title={title}
-                    description={description}
-                    location={location}
-                    setTitle={setTitle}
-                    setDescription={setDescription}
-                    setLocation={setLocation}
-                    selectedPost={selectedPost!}
-                    onDelete={() => fetchUserPosts()}
-                  />
-                </Col>
-              ))}
-            </Row>
-          );
-        }
-      })}
+          <Col className="col-md-9">
+            <div className="userContent">
+              <h2 className="profile-h2">Profile</h2>
+              <button type="button" className="create-post" onClick={showPostForm}>
+                Create New Post
+              </button>
+            </div>
+            <div className="seperater"></div>
+            <Container style={{ overflow: "auto", maxHeight: "500px" }}>
+              {userPosts.map((postOrArray, index) => {
+                if (Array.isArray(postOrArray)) {
+                  return (
+                    <Row key={index}>
+                      {postOrArray.map((post) => (
+                        <Col className="hello" key={post.id}>
+                          <ProfilePostCard
+                            post={post}
+                            onClick={handleCardClick}
+                            title={title}
+                            description={description}
+                            location={location}
+                            setTitle={setTitle}
+                            setDescription={setDescription}
+                            setLocation={setLocation}
+                            selectedPost={selectedPost!}
+                            onDelete={() => fetchUserPosts()}
+                          />
+                        </Col>
+                      ))}
+                    </Row>
+                  );
+                }
+              })}
+            </Container>
+          </Col>
+        </Row>
       </Container>
-    </Col>
-  </Row>
-</Container>
-
-
 
       <PostModal
         post={selectedPost}
