@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Modal, Container, Row, Form, Button } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -11,14 +11,14 @@ type CreatePostModalProps = {
   title: string;
   description: string;
   location: string;
-  reservations: Date[];
+  reservations: string[];
   images: string[];
   onPostCreated: () => void;
   setImages: React.Dispatch<React.SetStateAction<string[]>>;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
   setDescription: React.Dispatch<React.SetStateAction<string>>;
   setLocation: React.Dispatch<React.SetStateAction<string>>;
-  setReservations: React.Dispatch<React.SetStateAction<Date[]>>;
+  setReservations: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 const CreatePostModal: React.FC<CreatePostModalProps> = ({
@@ -60,6 +60,33 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     onHide();
   };
 
+  const dropHandler = async (event: React.DragEvent) => {
+    event.preventDefault();
+    for (const item of event.dataTransfer.items) {
+      const file = item.getAsFile();
+      if (file) {
+        const encoded = await bytesToBase64DataUrl(
+          new Uint8Array(await file.arrayBuffer()),
+          file.type,
+        );
+        setImages((prevImages) => [...prevImages, encoded]);
+      }
+    }
+  };
+
+  const dragOverHandler = (event: React.DragEvent) => {
+    event.preventDefault();
+  };
+
+  const bytesToBase64DataUrl = async (bytes: Uint8Array, type: string) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(new File([bytes], "", { type }));
+    });
+  };
+
   return (
     <Modal show={show} onHide={onHide} centered size="lg">
       <Modal.Header closeButton>
@@ -95,46 +122,50 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 autoComplete="off"
               />
             </Form.Group>
+            <Form.Group className="mb-3" controlId="image">
+              <Form.Label>Image:</Form.Label>
+              <Row>
+                <div
+                  id="drop_zone"
+                  onDrop={dropHandler}
+                  onDragOver={dragOverHandler}
+                  style={{ border: "1px dashed black", padding: "20px", textAlign: "center" }}
+                >
+                  <p>
+                    Drag one or more files to this <i>drop zone</i>.
+                  </p>
+                </div>
+              </Row>
+            </Form.Group>
             <Form.Group className="calendar mb-3" controlId="pickupTime">
               <Row>
                 {reservations.map((reservation, index) => (
                   <div key={index} className="mb-3">
                     <DatePicker
-                      selected={reservation}
-                      onChange={(date: Date) => {
+                      selected={reservation ? new Date(reservation) : null}
+                      onChange={(date) => {
                         const newReservations = [...reservations];
-                        newReservations[index] = date;
+                        newReservations[index] = date ? date.toString() : "";
                         setReservations(newReservations);
                       }}
                       showTimeSelect
-                      timeFormat="HH:mm"
-                      timeIntervals={15}
-                      timeCaption="time"
                       dateFormat="MMMM d, yyyy h:mm aa"
                     />
-                    <button
-                      onClick={() => {
-                        const newReservations = [...reservations];
-                        newReservations.splice(index, 1);
-                        setReservations(newReservations);
-                      }}
-                      className="deleteTime"
-                    >
-                      x
-                    </button>
                   </div>
                 ))}
                 <Button
                   variant="primary"
                   onClick={() => {
-                    setReservations([...reservations, new Date()]);
+                    setReservations([...reservations, new Date().toString()]);
                   }}
                 >
                   Add Pickup Time
                 </Button>
               </Row>
             </Form.Group>
-            <Button type="submit" variant="success">Submit Post</Button>
+            <Button type="submit" variant="success">
+              Submit Post
+            </Button>
           </Form>
         </Container>
       </Modal.Body>

@@ -51,7 +51,7 @@ const Posts = () => {
 
   const handleReservation = async (
     event: React.FormEvent<HTMLFormElement>,
-    reservationId: number
+    reservationId: number,
   ) => {
     event.preventDefault();
 
@@ -74,9 +74,10 @@ const Posts = () => {
 
   return (
     <>
+      <PostsTopComponent />
       {alertVisible && (
         <Alert
-          style={{ textAlign: "center" }}
+          style={{ textAlign: "center", position: "fixed", top: 0, width: "100%", zIndex: 9999 }}
           variant="danger"
           onClose={() => setAlertVisible(false)}
           dismissible
@@ -84,11 +85,6 @@ const Posts = () => {
           {alertMessage}
         </Alert>
       )}
-      <ReservationToast
-        showReservationToast={showReservationToast}
-        onClose={() => setShowReservationToast(false)}
-      />
-      <PostsTopComponent />
       <Container className="search mt-4">
         <SearchBar searchTerm={searchTerm} onSearchInputChange={handleSearchInputChange} />
       </Container>
@@ -115,6 +111,10 @@ const Posts = () => {
       <footer className="footer">
         <p className="footer-p text-center">&copy; 2024 Copyright: Ink</p>
       </footer>
+      <ReservationToast
+        showReservationToast={showReservationToast}
+        onClose={() => setShowReservationToast(false)}
+      />
     </>
   );
 };

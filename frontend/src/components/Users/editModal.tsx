@@ -1,39 +1,33 @@
 import React, { useEffect } from "react";
-import { Modal, Container, Row } from "react-bootstrap";
+import { Modal, Container, Row, Col, Button } from "react-bootstrap";
 import { Post } from "../../utils/TypeProps";
 import { fetchHandler } from "../../utils/utils";
 import { getPatchOptions } from "../../utils/utils";
 
-type PostModalProps = {
-  post: Post;
+type EditModalProps = {
   show: boolean;
-  title: string;
-  description: string;
-  location: string;
-  setTitle: React.Dispatch<React.SetStateAction<string>>;
-  setDescription: React.Dispatch<React.SetStateAction<string>>;
-  setLocation: React.Dispatch<React.SetStateAction<string>>;
   onHide: () => void;
+  post: Post;
+  title: string;
+  setTitle: React.Dispatch<React.SetStateAction<string>>;
+  location: string;
+  setLocation: React.Dispatch<React.SetStateAction<string>>;
+  description: string;
+  setDescription: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const EditModal: React.FC<PostModalProps> = ({
-  post,
-  show,
-  onHide,
-  title,
-  description,
-  location,
-  setTitle,
-  setDescription,
-  setLocation,
-}) => {
+const EditModal: React.FC<EditModalProps> = ({ post, show, onHide }) => {
+  const [title, setTitle] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [location, setLocation] = React.useState("");
+
   useEffect(() => {
     if (show && post) {
       setTitle(post.title);
       setDescription(post.description);
       setLocation(post.location);
     }
-  }, [show, post, setTitle, setDescription, setLocation]);
+  }, [show, post]);
 
   const handleEditSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,7 +40,6 @@ const EditModal: React.FC<PostModalProps> = ({
       description,
       location,
     };
-    console.log(editFormData);
     await fetchHandler(`/api/v1/posts/${post.id}`, getPatchOptions(editFormData));
     onHide(); // Close the modal after submission
   };
@@ -64,37 +57,48 @@ const EditModal: React.FC<PostModalProps> = ({
       <Modal.Body>
         <Container fluid>
           <form onSubmit={handleEditSubmit}>
-            <label htmlFor="title">Title:</label>
-            <Row>
-              <input
-                type="text"
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                autoComplete="off"
-              />
+            <Row className="mb-3">
+              <Col xs={12}>
+                <label htmlFor="title" className="form-label">Title:</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  autoComplete="off"
+                />
+              </Col>
             </Row>
-            <label htmlFor="description">Description:</label>
-            <Row>
-              <input
-                type="text"
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                autoComplete="off"
-              />
+            <Row className="mb-3">
+              <Col xs={12}>
+                <label htmlFor="description" className="form-label">Description:</label>
+                <textarea
+                  className="form-control"
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  autoComplete="off"
+                  style={{ height: "100px" }}
+                />
+              </Col>
             </Row>
-            <label htmlFor="location">Location:</label>
-            <Row>
-              <input
-                type="text"
-                id="location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                autoComplete="off"
-              />
+            <Row className="mb-3">
+              <Col xs={12}>
+                <label htmlFor="location" className="form-label">Location:</label>
+                <textarea
+                  className="form-control"
+                  id="location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  autoComplete="off"
+                  style={{ height: "100px" }}
+                />
+              </Col>
             </Row>
-            <button type="submit">Submit Post</button>
+            <div className="text-end">
+              <Button type="submit">Submit Post</Button>
+            </div>
           </form>
         </Container>
       </Modal.Body>
