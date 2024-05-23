@@ -1,5 +1,7 @@
-import React from "react";
-import { Modal, Container, Row } from "react-bootstrap";
+import React, { useEffect } from "react";
+import { Modal, Container, Row, Form, Button } from "react-bootstrap";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { fetchHandler } from "../../utils/utils";
 import { getPostOptions } from "../../utils/utils";
 
@@ -9,14 +11,14 @@ type CreatePostModalProps = {
   title: string;
   description: string;
   location: string;
-  reservations: string[];
+  reservations: Date[];
   images: string[];
   onPostCreated: () => void;
   setImages: React.Dispatch<React.SetStateAction<string[]>>;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
   setDescription: React.Dispatch<React.SetStateAction<string>>;
   setLocation: React.Dispatch<React.SetStateAction<string>>;
-  setReservations: React.Dispatch<React.SetStateAction<string[]>>;
+  setReservations: React.Dispatch<React.SetStateAction<Date[]>>;
 };
 
 const CreatePostModal: React.FC<CreatePostModalProps> = ({
@@ -34,12 +36,18 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
   setReservations,
   onPostCreated,
 }) => {
+  useEffect(() => {
+    if (show) {
+      setTitle("");
+      setDescription("");
+      setLocation("");
+      setImages([]);
+      setReservations([]);
+    }
+  }, [show, setTitle, setDescription, setLocation, setImages, setReservations]);
+
   const handleNewPostSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (images.length === 0) {
-      alert("Please drop at least one image into the drop zone.");
-      return;
-    }
     const postFormData = {
       title,
       description,
@@ -52,43 +60,6 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     onHide();
   };
 
-  async function bytesToBase64DataUrl(bytes: Uint8Array, type: string) {
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(new File([bytes], "", { type }));
-    });
-  }
-
-  async function dropHandler(event: React.DragEvent) {
-    event.preventDefault();
-    for (const item of event.dataTransfer.items) {
-      const file = item.getAsFile();
-      if (file) {
-        const encoded = await bytesToBase64DataUrl(
-          new Uint8Array(await file.arrayBuffer()),
-          file.type
-        );
-        setImages((prevImages) => [...prevImages, encoded]);
-      }
-    }
-  }
-
-  function dragOverHandler(event: React.DragEvent) {
-    event.preventDefault();
-  }
-
-  function addDatetimeField() {
-    setReservations([...reservations, ""]);
-  }
-
-  const handleDatetimeChange = (index: number, value: string) => {
-    const newReservations = [...reservations];
-    newReservations[index] = value;
-    setReservations(newReservations);
-  };
-
   return (
     <Modal show={show} onHide={onHide} centered size="lg">
       <Modal.Header closeButton>
@@ -96,78 +67,75 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
       </Modal.Header>
       <Modal.Body>
         <Container fluid>
-          <Row>
-            <form onSubmit={handleNewPostSubmit}>
-              <label htmlFor="title">Title:</label>
-              <Row>
-                <input
-                  type="text"
-                  id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  autoComplete="off"
-                  required
-                />
-              </Row>
-              <label htmlFor="description">Description:</label>
-              <Row>
-                <input
-                  type="text"
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  autoComplete="off"
-                  required
-                />
-              </Row>
-              <label htmlFor="location">Location:</label>
-              <Row>
-                <input
-                  type="text"
-                  id="location"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  autoComplete="off"
-                  required
-                />
-              </Row>
-              <label htmlFor="image">Image:</label>
-              <Row>
-                <div
-                  id="drop_zone"
-                  onDrop={dropHandler}
-                  onDragOver={dragOverHandler}
-                  style={{ border: "1px dashed black", padding: "20px", textAlign: "center" }}
-                >
-                  <p>
-                    Drag one or more files to this <i>drop zone</i>.
-                  </p>
-                </div>
-              </Row>
-              <label htmlFor="pickupTime">Pickup Time:</label>
+          <Form onSubmit={handleNewPostSubmit}>
+            <Form.Group className="mb-3" controlId="title">
+              <Form.Label>Title:</Form.Label>
+              <Form.Control
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                autoComplete="off"
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="description">
+              <Form.Label>Description:</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="location">
+              <Form.Label>Location:</Form.Label>
+              <Form.Control
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                autoComplete="off"
+              />
+            </Form.Group>
+            <Form.Group className="calendar mb-3" controlId="pickupTime">
               <Row>
                 {reservations.map((reservation, index) => (
-                  <input
-                    key={index}
-                    type="datetime-local"
-                    value={reservation}
-                    onChange={(e) => handleDatetimeChange(index, e.target.value)}
-                    required
-                  />
+                  <div key={index} className="mb-3">
+                    <DatePicker
+                      selected={reservation}
+                      onChange={(date: Date) => {
+                        const newReservations = [...reservations];
+                        newReservations[index] = date;
+                        setReservations(newReservations);
+                      }}
+                      showTimeSelect
+                      timeFormat="HH:mm"
+                      timeIntervals={15}
+                      timeCaption="time"
+                      dateFormat="MMMM d, yyyy h:mm aa"
+                    />
+                    <button
+                      onClick={() => {
+                        const newReservations = [...reservations];
+                        newReservations.splice(index, 1);
+                        setReservations(newReservations);
+                      }}
+                      className="deleteTime"
+                    >
+                      x
+                    </button>
+                  </div>
                 ))}
-                <button type="button" onClick={addDatetimeField}>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    setReservations([...reservations, new Date()]);
+                  }}
+                >
                   Add Pickup Time
-                </button>
+                </Button>
               </Row>
-              <br />
-              <button type="submit">Submit Post</button>
-              <div>
-                {images.map((img, i) => (
-                  <img src={img} key={i} alt={`uploaded ${i}`} />
-                ))}
-              </div>
-            </form>
-          </Row>
+            </Form.Group>
+            <Button type="submit" variant="success">Submit Post</Button>
+          </Form>
         </Container>
       </Modal.Body>
     </Modal>

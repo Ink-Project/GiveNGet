@@ -8,6 +8,7 @@ import { Post } from "../utils/TypeProps";
 import FilterComponent from "../components/FilterComponent";
 import CurrentUserContext from "../context/CurrentUserContext";
 import ReservationToast from "../components/Posts/ReservationToasts";
+import PostsTopComponent from "../components/Posts/PostsTopComponent";
 import "../css/Posts.css";
 
 const Posts = () => {
@@ -87,7 +88,7 @@ const Posts = () => {
         showReservationToast={showReservationToast}
         onClose={() => setShowReservationToast(false)}
       />
-      <h1 className="posts-h1">Explore Posts</h1>
+      <PostsTopComponent />
       <Container className="search mt-4">
         <SearchBar searchTerm={searchTerm} onSearchInputChange={handleSearchInputChange} />
       </Container>

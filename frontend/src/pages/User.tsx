@@ -87,7 +87,7 @@ export default function UserPage() {
       {id && userProfile && <ProfileImage userId={id} />}
       <h3>Username: {profileUsername}</h3>
       <div className="simpleLine"></div>
-      <EditProfile />
+      <EditProfile userId={currentUser.id}/>
     </Col>
 
     <Col className="col-md-9">
@@ -115,6 +115,7 @@ export default function UserPage() {
                     setDescription={setDescription}
                     setLocation={setLocation}
                     selectedPost={selectedPost!}
+                    onDelete={() => fetchUserPosts()}
                   />
                 </Col>
               ))}

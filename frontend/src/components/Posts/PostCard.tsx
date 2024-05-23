@@ -14,7 +14,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
         <Card.Img
           src={`${window.location.origin}${post.images[0]}`} // Display the first image
           alt="Placeholder"
-          className="img-fluid w-100"
+          className="img-fluid"
           style={{ maxWidth: "100%", height: "15rem" }}
         />
         <Card.Body>

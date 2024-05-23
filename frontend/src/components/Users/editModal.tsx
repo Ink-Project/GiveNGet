@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal, Container, Row } from "react-bootstrap";
 import { Post } from "../../utils/TypeProps";
 import { fetchHandler } from "../../utils/utils";
@@ -27,6 +27,14 @@ const EditModal: React.FC<PostModalProps> = ({
   setDescription,
   setLocation,
 }) => {
+  useEffect(() => {
+    if (show && post) {
+      setTitle(post.title);
+      setDescription(post.description);
+      setLocation(post.location);
+    }
+  }, [show, post, setTitle, setDescription, setLocation]);
+
   const handleEditSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!post) {
@@ -40,6 +48,7 @@ const EditModal: React.FC<PostModalProps> = ({
     };
     console.log(editFormData);
     await fetchHandler(`/api/v1/posts/${post.id}`, getPatchOptions(editFormData));
+    onHide(); // Close the modal after submission
   };
 
   // Render nothing if post is null
