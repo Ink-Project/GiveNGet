@@ -2,8 +2,10 @@ import EditProfileForm from "../components/Users/EditPofileForm";
 
 const EditProfilePage = () => {
   return (
-    <EditProfileForm />
-  )
-}
+      <div className="editCssPage">
+        <EditProfileForm />
+      </div>
+  );
+};
 
 export default EditProfilePage;

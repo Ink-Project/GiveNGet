@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchHandler } from "../../utils/utils";
 import { deleteOptions } from "../../utils/utils";
 import CurrentUserContext from "../../context/CurrentUserContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 
 type EditProfileProps = {
   userId: string;
@@ -23,9 +23,12 @@ const EditProfile: React.FC<EditProfileProps> = ({ userId }) => {
     navigate("/login");
   };
 
-  const alertPlaceholder = document.getElementById("liveAlertPlaceholder");
-
   const appendAlert = (message: string, type: string) => {
+    const alertPlaceholder = document.getElementById("liveAlertPlaceholder");
+    if (alertPlaceholder) {
+      alertPlaceholder.innerHTML = ""; // Clear previous alert if any
+    }
+    
     const wrapper = document.createElement("div");
     wrapper.innerHTML = [
       `<div class="alert alert-${type} alert-dismissible" role="alert">`,
@@ -48,16 +51,25 @@ const EditProfile: React.FC<EditProfileProps> = ({ userId }) => {
 
     document.getElementById("cancelDelete")?.addEventListener("click", () => {
       console.log("Profile deletion cancelled");
-      wrapper.remove(); 
+      wrapper.remove();
     });
   };
 
-  const alertTrigger = document.getElementById("liveAlertBtn");
-  if (alertTrigger) {
-    alertTrigger.addEventListener("click", () => {
-      appendAlert("Are you sure you want to delete this profile?", "warning");
-    });
-  }
+  useEffect(() => {
+    const alertTrigger = document.getElementById("liveAlertBtn");
+    if (alertTrigger) {
+      const handleClick = () => {
+        appendAlert("Are you sure you want to delete this profile?", "warning");
+      };
+      alertTrigger.addEventListener("click", handleClick);
+
+      // Cleanup the event listener when the component unmounts
+      return () => {
+        alertTrigger.removeEventListener("click", handleClick);
+      };
+    }
+  }, []);
+
   return (
     <>
       <div>

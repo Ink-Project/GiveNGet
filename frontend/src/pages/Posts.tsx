@@ -8,6 +8,7 @@ import { Post } from "../utils/TypeProps";
 import FilterComponent from "../components/FilterComponent";
 import CurrentUserContext from "../context/CurrentUserContext";
 import ReservationToast from "../components/Posts/ReservationToasts";
+import PostsTopComponent from "../components/Posts/PostsTopComponent";
 import "../css/Posts.css";
 
 const Posts = () => {
@@ -50,7 +51,7 @@ const Posts = () => {
 
   const handleReservation = async (
     event: React.FormEvent<HTMLFormElement>,
-    reservationId: number
+    reservationId: number,
   ) => {
     event.preventDefault();
 
@@ -73,9 +74,10 @@ const Posts = () => {
 
   return (
     <>
+      <PostsTopComponent />
       {alertVisible && (
         <Alert
-          style={{ textAlign: "center" }}
+          style={{ textAlign: "center", position: "fixed", top: 0, width: "100%", zIndex: 9999 }}
           variant="danger"
           onClose={() => setAlertVisible(false)}
           dismissible
@@ -83,11 +85,6 @@ const Posts = () => {
           {alertMessage}
         </Alert>
       )}
-      <ReservationToast
-        showReservationToast={showReservationToast}
-        onClose={() => setShowReservationToast(false)}
-      />
-      <h1 className="posts-h1">Explore Posts</h1>
       <Container className="search mt-4">
         <SearchBar searchTerm={searchTerm} onSearchInputChange={handleSearchInputChange} />
       </Container>
@@ -114,6 +111,10 @@ const Posts = () => {
       <footer className="footer">
         <p className="footer-p text-center">&copy; 2024 Copyright: Ink</p>
       </footer>
+      <ReservationToast
+        showReservationToast={showReservationToast}
+        onClose={() => setShowReservationToast(false)}
+      />
     </>
   );
 };

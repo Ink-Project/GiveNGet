@@ -16,7 +16,6 @@ type User = {
   id: string;
   username: string;
 };
-
 export default function UserPage() {
   const { currentUser } = useContext(CurrentUserContext);
   const [userProfile, setUserProfile] = useState<User | null>(null);
@@ -74,7 +73,7 @@ export default function UserPage() {
 
   const handleReservation = async (
     event: React.FormEvent<HTMLFormElement>,
-    reservationId: number
+    reservationId: number,
   ) => {
     event.preventDefault();
     await fetchHandler(`/api/v1/reservations/${reservationId}/select`, getPostOptions({}));
@@ -88,12 +87,10 @@ export default function UserPage() {
             {id && userProfile && <ProfileImage userId={id} />}
             <h3>Username: {profileUsername}</h3>
             <div className="simpleLine"></div>
-            <EditProfile 
-            userId={currentUser.id}
-            />
+            <EditProfile userId={currentUser.id} />
           </Col>
 
-          <Col className="col-md-8">
+          <Col className="col-md-9">
             <div className="userContent">
               <h2 className="profile-h2">Profile</h2>
               <button type="button" className="create-post" onClick={showPostForm}>
@@ -101,25 +98,26 @@ export default function UserPage() {
               </button>
             </div>
             <div className="seperater"></div>
-            <Container className="usersPost">
+            <Container style={{ overflow: "auto", maxHeight: "500px" }}>
               {userPosts.map((postOrArray, index) => {
                 if (Array.isArray(postOrArray)) {
                   return (
                     <Row key={index}>
                       {postOrArray.map((post) => (
-                        <ProfilePostCard
-                          key={post.id}
-                          post={post}
-                          onClick={handleCardClick}
-                          title={title}
-                          description={description}
-                          location={location}
-                          setTitle={setTitle}
-                          setDescription={setDescription}
-                          setLocation={setLocation}
-                          selectedPost={selectedPost!}
-                          onDelete={fetchUserPosts}
-                        />
+                        <Col className="hello" key={post.id}>
+                          <ProfilePostCard
+                            post={post}
+                            onClick={handleCardClick}
+                            title={title}
+                            description={description}
+                            location={location}
+                            setTitle={setTitle}
+                            setDescription={setDescription}
+                            setLocation={setLocation}
+                            selectedPost={selectedPost!}
+                            onDelete={() => fetchUserPosts()}
+                          />
+                        </Col>
                       ))}
                     </Row>
                   );

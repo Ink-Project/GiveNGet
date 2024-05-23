@@ -39,6 +39,7 @@
   margin-right: 3rem;
   border-radius: 30px;
   text-align: center;
+  max-height: 35rem;
   box-shadow: 
   1px 1px rgba(0,0,0,0.2),
   2px 2px rgba(0,0,0,0.2),
@@ -72,6 +73,59 @@
   background-color: #ffa500;
 }
 
-.usersPost {
+.userPostContainer {
   margin: 1rem;
+}
+
+
+.size {
+  width: 25rem;
+  margin: 1;
+}
+
+
+.editH1 {
+  text-align: center;
+}
+
+.updateProlifeContainer {
+  padding: 60px;
+}
+
+.edit-image {
+  position: absolute;
+  right: 5%;
+  top: 25%;
+}
+
+.link-to-profile {
+  margin: 1rem;
+}
+
+.submitUpdateProfile {
+  background-color: #0D5C63;
+  border: none;
+  border-radius: 6px;
+  margin: 16px;
+  padding: 6px 12px;
+  color: white;
+}
+
+.editCssPage {
+  margin-top: 7rem;
+  height: 30rem;
+}
+
+.calendar {
+  text-align: center;
+  margin: 1rem;
+}
+
+.deleteTime {
+  margin-left: 1rem;
+  padding: 5px;
+  border: none;
+  background-color: transparent;
+  font-weight: bold;
+  font-size: x-large;
 }

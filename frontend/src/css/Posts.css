@@ -1,4 +1,17 @@
 /* Top Component*/
+.postHeader {
+  margin-bottom: 0;
+  font-weight: bolder;
+  font-size: 55px;
+  color: orange;
+}
+
+.post-para {
+  margin-top: 1rem;
+  font-size: 20px;
+  color: white;
+}
+
 .box {
   height: 30px;
   display: flex;
@@ -49,8 +62,22 @@
 /* Top Component*/
 
 .posts {
-  height: 80vh;
+  height: fit-content;
 }
+
+.img-fluid {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.reservationForm {
+  display: inline-block;
+  margin: 0; /* Reset margin */
+  padding: 0; /* Reset padding */
+  width: fit-content;
+}
+
 
 /* Post Modal styling */
 .reservationBtn{

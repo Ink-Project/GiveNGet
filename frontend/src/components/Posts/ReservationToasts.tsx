@@ -7,10 +7,7 @@ type ReservationToastProps = {
   onClose: () => void;
 };
 
-const ReservationToast: React.FC<ReservationToastProps> = ({
-  showReservationToast,
-  onClose,
-}) => {
+const ReservationToast: React.FC<ReservationToastProps> = ({ showReservationToast, onClose }) => {
   const [reservationTime, setReservationTime] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -30,14 +27,13 @@ const ReservationToast: React.FC<ReservationToastProps> = ({
       delay={10000}
       autohide
       className="position-fixed bottom-0 end-0 p-3 mb-3"
+      style={{ zIndex: 9999 }}
     >
       <Toast.Header>
         <strong className="me-auto">Reservation</strong>
         {reservationTime && <small>{formatDistanceToNow(reservationTime)} ago</small>}
       </Toast.Header>
-      <Toast.Body>
-        Item has been reserved. Check your Inbox.
-      </Toast.Body>
+      <Toast.Body>Item has been reserved. Check your Inbox.</Toast.Body>
     </Toast>
   );
 };
