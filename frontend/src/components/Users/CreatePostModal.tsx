@@ -4,7 +4,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { fetchHandler } from "../../utils/utils";
 import { getPostOptions } from "../../utils/utils";
-import { useEffect } from "react";
 
 type CreatePostModalProps = {
   show: boolean;

@@ -3,7 +3,7 @@ import { logUserOut } from "../adapters/auth-adapter";
 import { useContext } from "react";
 import CurrentUserContext from "../context/CurrentUserContext";
 import { Navbar, Nav, Container, Dropdown } from "react-bootstrap";
-import logo from "../images/logo.svg";
+import real from "../images/real.png";
 import user from "../images/user.svg";
 
 const NavBar = () => {
@@ -21,7 +21,7 @@ const NavBar = () => {
     <Navbar className="sticky-top" style={{ backgroundColor: '#0D5C63' }}>
       <Container>
         <Navbar.Brand to="/" as={NavLink}>
-          <img className="logo" src={logo} alt="Logo" height="60" width="100%" />
+          <img className="logo" src={real} alt="Logo" height="60" width="100%" />
         </Navbar.Brand>
         <Nav className="ms-auto align-items-center">
         <Nav.Link to="/posts" as={NavLink} style={{ color: 'orange', fontSize: "18px", fontWeight: "bold"}}>
@@ -47,7 +47,7 @@ const NavBar = () => {
           ) : (
             <Dropdown>
               <Dropdown.Toggle variant="outline primary">
-                <img style={{ width: "3rem", height: "4rem" }} src={user} alt="user image" />
+                <img style={{ width: "3rem", height: "4rem"}} src={user} alt="user image" />
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item as={NavLink} to="/login">
