@@ -29,7 +29,6 @@ export const seed = async () => {
   const creative_chef = (await User.create("creative_chef", "1234", "Ella Thompson"))!;
   const artistic_soul = (await User.create("artistic_soul", "1234", "Grace Parker"))!;
   const home_chef = (await User.create("home_chef", "1234", "Daniel Taylor"))!;
-  
 
   const first = await Post.create(
     cool_cat.id,
@@ -55,8 +54,11 @@ export const seed = async () => {
       "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6550/6550428cv7d.jpg",
       "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6550/6550428cv10d.jpg",
     ],
-    [ new Date(2024, 5, 2, 11, 25, 40), new Date(2024, 5, 3, 14, 35, 50),
-      new Date(2024, 5, 4, 16, 45, 10),],
+    [
+      new Date(2024, 5, 2, 11, 25, 40),
+      new Date(2024, 5, 3, 14, 35, 50),
+      new Date(2024, 5, 4, 16, 45, 10),
+    ],
   );
 
   await Post.create(
@@ -67,8 +69,7 @@ export const seed = async () => {
     [
       "https://cdn.thewirecutter.com/wp-content/media/2023/05/sofabuyingguide-2048px-benchmademoderncream.jpg?auto=webp&quality=75&width=1024",
     ],
-    [new Date(2024, 5, 5, 18, 55, 20),
-      new Date(2024, 5, 6, 20, 5, 30),],
+    [new Date(2024, 5, 5, 18, 55, 20), new Date(2024, 5, 6, 20, 5, 30)],
   );
 
   await Post.create(
@@ -82,8 +83,7 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/NMMAAOSwIbZhNUpa/s-l1600.webp",
       "https://i.ebayimg.com/images/g/te0AAOSwMO9hNUpb/s-l1600.webp",
     ],
-    [ new Date(2024, 5, 7, 22, 15, 40),
-      new Date(2024, 5, 8, 23, 25, 50),],
+    [new Date(2024, 5, 7, 22, 15, 40), new Date(2024, 5, 8, 23, 25, 50)],
   );
 
   await Post.create(
@@ -92,8 +92,7 @@ export const seed = async () => {
     "Hand-knitted cozy blanket made from soft wool. Perfect for keeping warm during chilly evenings. The colors are earthy and blend well with any home decor.",
     "456 Elm Avenue, Brooklyn, NY",
     ["https://i.ebayimg.com/images/g/l1MAAOSwN3FmQV1j/s-l1600.webp"],
-    [new Date(2024, 5, 9, 8, 35, 0),
-      new Date(2024, 5, 10, 10, 45, 10),],
+    [new Date(2024, 5, 9, 8, 35, 0), new Date(2024, 5, 10, 10, 45, 10)],
   );
 
   await Post.create(
@@ -107,8 +106,7 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/XEcAAOSw1~5mTlf9/s-l1600.webp",
       "https://i.ebayimg.com/images/g/JTAAAOSwT5JmTlgZ/s-l1600.webp",
     ],
-    [new Date(2024, 5, 25, 21, 15, 40),
-      new Date(2024, 5, 26, 23, 25, 50)],
+    [new Date(2024, 5, 25, 21, 15, 40), new Date(2024, 5, 26, 23, 25, 50)],
   );
 
   await Post.create(
@@ -122,8 +120,7 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/99cAAOSwNcBmTkqT/s-l1600.webp",
       "https://i.ebayimg.com/images/g/dTUAAOSwOTZmTkqS/s-l1600.webp",
     ],
-    [new Date(2024, 5, 23, 17, 55, 20),
-      new Date(2024, 5, 24, 19, 5, 30),],
+    [new Date(2024, 5, 23, 17, 55, 20), new Date(2024, 5, 24, 19, 5, 30)],
   );
 
   await Post.create(
@@ -137,8 +134,7 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/q98AAOSw8Q5kqx0c/s-l1600.webp",
       "https://i.ebayimg.com/images/g/mzcAAOSwvtVkqx0f/s-l1600.webp",
     ],
-    [new Date(2024, 5, 21, 13, 35, 0),
-      new Date(2024, 5, 22, 15, 45, 10),],
+    [new Date(2024, 5, 21, 13, 35, 0), new Date(2024, 5, 22, 15, 45, 10)],
   );
 
   await Post.create(
@@ -152,8 +148,7 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/nCsAAOSwI9tmRWZM/s-l1600.webp",
       "https://i.ebayimg.com/images/g/lC4AAOSwfK1mRWZG/s-l1600.webp",
     ],
-    [new Date(2024, 5, 19, 9, 15, 40),
-      new Date(2024, 5, 20, 11, 25, 50)],
+    [new Date(2024, 5, 19, 9, 15, 40), new Date(2024, 5, 20, 11, 25, 50)],
   );
 
   await Post.create(
@@ -166,8 +161,7 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/jRQAAOSwtYtkWEbQ/s-l1600.webp",
       "https://i.ebayimg.com/images/g/SQYAAOSwzUdkdre7/s-l1600.webp",
     ],
-    [new Date(2024, 5, 17, 23, 55, 20),
-      new Date(2024, 5, 18, 7, 5, 30),],
+    [new Date(2024, 5, 17, 23, 55, 20), new Date(2024, 5, 18, 7, 5, 30)],
   );
 
   await Post.create(
@@ -181,8 +175,7 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/y-UAAOSwaIRhltL-/s-l1600.webp",
       "https://i.ebayimg.com/images/g/jCoAAOSw0AphltL~/s-l1600.webp",
     ],
-    [new Date(2024, 5, 15, 20, 35, 0),
-      new Date(2024, 5, 16, 22, 45, 10),],
+    [new Date(2024, 5, 15, 20, 35, 0), new Date(2024, 5, 16, 22, 45, 10)],
   );
 
   await Post.create(
@@ -196,8 +189,7 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/id0AAOSwYuNmB3K4/s-l1600.webp",
       "https://i.ebayimg.com/images/g/IH8AAOSw9tJmB3K5/s-l1600.webp",
     ],
-    [new Date(2024, 5, 13, 16, 15, 40),
-      new Date(2024, 5, 14, 18, 25, 50),],
+    [new Date(2024, 5, 13, 16, 15, 40), new Date(2024, 5, 14, 18, 25, 50)],
   );
   await Post.create(
     creative_crafter.id,
@@ -208,9 +200,11 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/VBkAAOSw2CNf0FuH/s-l1600.webp",
       "https://i.ebayimg.com/images/g/0MUAAOSwum1f0FuF/s-l1600.webp",
     ],
-    [new Date(2024, 4, 23, 11, 4, 50),
+    [
+      new Date(2024, 4, 23, 11, 4, 50),
       new Date(2024, 5, 14, 14, 15, 30),
-      new Date(2024, 6, 20, 9, 45, 15),],
+      new Date(2024, 6, 20, 9, 45, 15),
+    ],
   );
 
   await Post.create(
@@ -224,9 +218,11 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/Z7sAAOSwdbVbpB-q/s-l1600.webp",
       "https://i.ebayimg.com/images/g/i8MAAOSwNwdbpB-~/s-l1600.webp",
     ],
-    [new Date(2024, 8, 28, 21, 55, 30),
+    [
+      new Date(2024, 8, 28, 21, 55, 30),
       new Date(2024, 5, 20, 12, 45, 55),
-      new Date(2024, 6, 10, 6, 20, 40)],
+      new Date(2024, 6, 10, 6, 20, 40),
+    ],
   );
 
   await Post.create(
@@ -239,9 +235,11 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/58QAAOSwvtZmPVA8/s-l1600.webp",
       "https://i.ebayimg.com/images/g/BMUAAOSwr6RmPVA8/s-l1600.webp",
     ],
-    [ new Date(2024, 7, 30, 8, 5, 10),
+    [
+      new Date(2024, 7, 30, 8, 5, 10),
       new Date(2024, 8, 8, 13, 15, 45),
-      new Date(2024, 8, 18, 17, 35, 5),],
+      new Date(2024, 8, 18, 17, 35, 5),
+    ],
   );
 
   await Post.create(
@@ -253,9 +251,11 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/ZV8AAOSwT5NlvFZW/s-l1600.webp",
       "https://i.ebayimg.com/images/g/k3wAAOSwurVlvFZX/s-l1600.webp",
     ],
-    [new Date(2024, 7, 3, 11, 40, 50),
+    [
+      new Date(2024, 7, 3, 11, 40, 50),
       new Date(2024, 7, 13, 15, 25, 35),
-      new Date(2024, 7, 23, 19, 50, 20),],
+      new Date(2024, 7, 23, 19, 50, 20),
+    ],
   );
 
   await Post.create(
@@ -269,9 +269,11 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/xiIAAOSwNNJmP8Bn/s-l1600.webp",
       "https://i.ebayimg.com/images/g/rQ4AAOSwAlFmP8Bn/s-l1600.webp",
     ],
-    [new Date(2024, 6, 4, 9, 30, 40),
+    [
+      new Date(2024, 6, 4, 9, 30, 40),
       new Date(2024, 6, 14, 16, 55, 25),
-      new Date(2024, 6, 24, 20, 10, 15),],
+      new Date(2024, 6, 24, 20, 10, 15),
+    ],
   );
   await Post.create(
     crafty_crafter.id,
@@ -283,9 +285,11 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/ha8AAOSwd75mRvE9/s-l1600.webp",
       "https://i.ebayimg.com/images/g/oaoAAOSwpAhmRvEy/s-l1600.webp",
     ],
-    [new Date(2024, 5, 5, 10, 20, 30),
+    [
+      new Date(2024, 5, 5, 10, 20, 30),
       new Date(2024, 5, 15, 14, 45, 50),
-      new Date(2024, 5, 25, 18, 5, 10),],
+      new Date(2024, 5, 25, 18, 5, 10),
+    ],
   );
 
   await Post.create(
@@ -298,9 +302,11 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/AmUAAOSws31mS~WE/s-l1600.webp",
       "https://i.ebayimg.com/images/g/pkMAAOSwOTZmS~WE/s-l1600.webp",
     ],
-    [new Date(2025, 4, 20, 19, 5, 40),
+    [
+      new Date(2025, 4, 20, 19, 5, 40),
       new Date(2025, 5, 11, 5, 15, 55),
-      new Date(2025, 6, 24, 22, 25, 10)],
+      new Date(2025, 6, 24, 22, 25, 10),
+    ],
   );
 
   await Post.create(
@@ -313,9 +319,11 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/Ra0AAOSwtsRmIqDb/s-l1600.webp",
       "https://i.ebayimg.com/images/g/-WEAAOSwKaZmIqDc/s-l1600.webp",
     ],
-    [new Date(2025, 1, 10, 17, 35, 50),
+    [
+      new Date(2025, 1, 10, 17, 35, 50),
       new Date(2025, 2, 23, 12, 45, 5),
-      new Date(2025, 3, 28, 15, 55, 25),],
+      new Date(2025, 3, 28, 15, 55, 25),
+    ],
   );
 
   await Post.create(
@@ -329,7 +337,7 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/ZfQAAOSw1GZmTp4S/s-l1600.webp",
       "https://i.ebayimg.com/images/g/J9oAAOSwBFJmTp4Z/s-l1600.webp",
     ],
-    [ new Date(2024, 5, 3, 14, 35, 50)],
+    [new Date(2024, 5, 3, 14, 35, 50)],
   );
 
   await Post.create(
@@ -342,9 +350,11 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/zjYAAOSw-IhmS5vH/s-l1600.webp",
       "https://i.ebayimg.com/images/g/4nIAAOSwbQVmS5vF/s-l1600.webp",
     ],
-    [new Date(2024, 7, 25, 18, 20, 45),
+    [
+      new Date(2024, 7, 25, 18, 20, 45),
       new Date(2024, 8, 30, 7, 30, 0),
-      new Date(2024, 9, 29, 21, 50, 10),],
+      new Date(2024, 9, 29, 21, 50, 10),
+    ],
   );
 
   await Post.create(
@@ -357,8 +367,7 @@ export const seed = async () => {
       "https://i.ebayimg.com/images/g/x10AAOSw8~dl6AvF/s-l1600.webp",
       "https://i.ebayimg.com/images/g/qlMAAOSwpVhl6AvI/s-l1600.webp",
     ],
-    [new Date(2024, 5, 11, 12, 55, 20),
-      new Date(2024, 5, 12, 14, 5, 30),],
+    [new Date(2024, 5, 11, 12, 55, 20), new Date(2024, 5, 12, 14, 5, 30)],
   );
 
   let [rev] = await Reservation.byPost(first!.id);
