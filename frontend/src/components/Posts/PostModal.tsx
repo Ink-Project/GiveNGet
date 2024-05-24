@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { Modal, Container, Row, Col, Carousel } from "react-bootstrap";
-import { fetchHandler } from "../../utils/utils";
+import { fetchHandler, imageUrl } from "../../utils/utils";
 import { Post } from "../../utils/TypeProps";
 
 type PostModalProps = {
@@ -33,11 +33,7 @@ const PostModal: React.FC<PostModalProps> = ({ post, show, onHide, handleReserva
               <Carousel>
                 {post?.images.map((image, index) => (
                   <Carousel.Item key={index}>
-                    <img
-                      src={`${window.location.origin}${image}`}
-                      alt={`Image ${index + 1}`}
-                      className="img-fluid"
-                    />
+                    <img src={imageUrl(image)} alt={`Image ${index + 1}`} className="img-fluid" />
                   </Carousel.Item>
                 ))}
               </Carousel>

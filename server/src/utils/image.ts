@@ -1,9 +1,7 @@
 import { writeFile, mkdir } from "fs/promises";
 import { randomUUID } from "crypto";
-import path from "path";
-
-export const IMAGES_URL_PATH = "/uploads";
-export const IMAGES_PATH = path.join(__dirname, "../..", IMAGES_URL_PATH);
+import { v2 as cloudinary } from "cloudinary";
+import { DBG_IMAGES_PATH, DBG_IMAGES_URL_PATH, IS_PRODUCTION } from ".";
 
 const exts: Partial<Record<string, string>> = {
   "image/png": "png",
@@ -12,34 +10,40 @@ const exts: Partial<Record<string, string>> = {
   "image/bmp": "bmp",
 };
 
-/** Get the image data from `image`. */
-const getImageData = async (image: string) => {
-  const resp = await fetch(image);
-  const ct = resp.headers.get("Content-Type");
-  const ext = exts[ct?.split(";")?.[0] || ""];
-  if (!ext) {
-    throw new Error(
-      `'${image}' returned unsupported content type ${ct} (must be png, webp, or jpg)`
-    );
-  }
-  return { data: new Uint8Array(await resp.arrayBuffer()), ext };
-};
-
-/**
- * Download/decode `image` and save it to the public images folder
- * @returns The public URL to the image on our server
- */
-export const processImage = async (image: string) => {
+const processImageLocal = async (image: string) => {
   try {
-    await mkdir(IMAGES_PATH, 0o744);
+    await mkdir(DBG_IMAGES_PATH, 0o744);
   } catch (err) {
     if ((err as NodeJS.ErrnoException)?.code !== "EEXIST") {
       throw err;
     }
   }
 
-  const res = await getImageData(image);
-  const file = `${randomUUID()}.${res.ext}`;
-  await writeFile(`${IMAGES_PATH}/${file}`, res.data);
-  return `${IMAGES_URL_PATH}/${file}`;
+  const resp = await fetch(image);
+  const ct = resp.headers.get("Content-Type");
+  const ext = exts[ct?.split(";")?.[0] || ""];
+  if (!ext) {
+    throw new Error(
+      `'${image}' returned unsupported content type ${ct} (must be png, webp, jpg, or bmp)`,
+    );
+  }
+  const data = new Uint8Array(await resp.arrayBuffer());
+  const file = `${randomUUID()}.${ext}`;
+  await writeFile(`${DBG_IMAGES_PATH}/${file}`, data);
+  return `${DBG_IMAGES_URL_PATH}/${file}`;
 };
+
+const processImageProd = (image: string) => {
+  return cloudinary.uploader
+    .upload(image, {
+      allowed_formats: ["png", "webp", "jpg", "bmp"],
+      unique_filename: true,
+    })
+    .then((resp) => resp.secure_url);
+};
+
+/**
+ * Download/decode `image` and save it to the public images folder
+ * @returns The public URL to the image on our server
+ */
+export const processImage = IS_PRODUCTION ? processImageProd : processImageLocal;

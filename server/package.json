@@ -7,7 +7,8 @@
     "check": "tsc --noEmit",
     "transpile": "swc ./src knexfile.ts -d dist",
     "img_reset": "mkdir -p ./uploads && rm -rf ./uploads/*",
-    "build": "npm run img_reset && npm run transpile && npm run migrate:rollback && npm run migrate && npm run seed",
+    "init": "npm run transpile && npm run migrate:rollback && npm run migrate && npm run seed",
+    "build": "npm run transpile && npm run migrate",
     "start": "node dist/src/index.js",
     "dev": "nodemon src/index.ts",
     "connect": "psql -U postgres -d react_auth_example",
@@ -24,6 +25,7 @@
   "dependencies": {
     "@eslint/js": "^9.2.0",
     "bcrypt": "^5.1.1",
+    "cloudinary": "^2.2.0",
     "connect-session-knex": "^4.0.0",
     "cookie-parser": "^1.4.6",
     "cookie-session": "^2.1.0",

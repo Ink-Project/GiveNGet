@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import path from "path";
 import { Knex } from "knex";
+import { PROJECT_ROOT } from "./src/utils";
 
 dotenv.config();
 
@@ -14,10 +15,10 @@ When we deploy in "production", we'll provide a PG_CONNECTION_STRING
 const common = {
   client: "pg",
   migrations: {
-    directory: path.join(__dirname, "./src/db/migrations"),
+    directory: path.join(PROJECT_ROOT, "src/db/migrations"),
   } satisfies Knex.MigratorConfig,
   seeds: {
-    directory: path.join(__dirname, "./src/db/seeds"),
+    directory: path.join(PROJECT_ROOT, "src/db/seeds"),
   } satisfies Knex.SeederConfig,
 };
 

@@ -37,3 +37,7 @@ export const fetchHandler = async (url: string, options: RequestInit = {}): Prom
     return [null, error as Error];
   }
 };
+
+export const imageUrl = import.meta.env.PROD
+  ? (img: string) => img
+  : (img: string) => window.location.origin + img;

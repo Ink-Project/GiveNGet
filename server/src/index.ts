@@ -1,14 +1,23 @@
 import path from "path";
 import express from "express";
-import cookieSession from "cookie-session";
-import authRouter from "./routers/auth";
-import userRouter from "./routers/user";
 import dotenv from "dotenv";
-import postRouter from "./routers/post";
-import resvRouter from "./routers/reservation";
-import { IMAGES_PATH, IMAGES_URL_PATH } from "./utils/image";
+import { v2 as cloudinary } from "cloudinary";
+import cookieSession from "cookie-session";
+import { userRouter, authRouter, postRouter, resvRouter } from "./routers";
+import { DBG_IMAGES_PATH, DBG_IMAGES_URL_PATH, IS_PRODUCTION, PROJECT_ROOT } from "./utils";
 
 dotenv.config();
+
+if (IS_PRODUCTION) {
+  cloudinary.config({
+    secure: true,
+    cloud_name: process.env.CLOUDINARY_CLOUD,
+    api_key: process.env.CLOUDINARY_KEY,
+    api_secret: process.env.CLOUDINARY_SECRET,
+  });
+}
+
+const FRONTEND_DIST = path.join(PROJECT_ROOT, "../frontend/dist");
 const app = express();
 
 // middleware
@@ -30,8 +39,11 @@ app.use((req, _res, next) => {
   next();
 }); // print information about each incoming request
 app.use(express.json()); // parse incoming request bodies as JSON
-app.use(express.static(path.join(__dirname, "../frontend/dist"))); // Serve static assets from the dist folder of the frontend
-app.use(IMAGES_URL_PATH, express.static(IMAGES_PATH));
+app.use(express.static(FRONTEND_DIST)); // Serve static assets from the dist folder of the frontend
+
+if (!IS_PRODUCTION) {
+  app.use(DBG_IMAGES_URL_PATH, express.static(DBG_IMAGES_PATH));
+}
 
 app.use("/api/v1", authRouter);
 app.use("/api/v1/users", userRouter);
@@ -42,7 +54,7 @@ app.use("/api/v1/reservations", resvRouter);
 // For all other requests, send back the index.html file in the dist folder.
 app.get("*", (req, res, next) => {
   if (req.originalUrl.startsWith("/api")) return next();
-  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  res.sendFile(path.join(FRONTEND_DIST, "index.html"));
 });
 
 const port = process.env.PORT || 3000;

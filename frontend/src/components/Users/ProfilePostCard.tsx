@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { Card } from "react-bootstrap";
 import { Post } from "../../utils/TypeProps";
-import { fetchHandler } from "../../utils/utils";
+import { fetchHandler, imageUrl } from "../../utils/utils";
 import { getPostOptions } from "../../utils/utils";
 import EditModal from "./editModal";
 
@@ -51,7 +51,7 @@ const ProfilePostCard: React.FC<PostCardProps> = ({
       <Card className="size">
         <div onClick={() => onClick(post)} style={{ cursor: "pointer" }}>
           <Card.Img
-            src={`${window.location.origin}${post.images[0]}`} // Display the first image
+            src={imageUrl(post.images[0])} // Display the first image
             alt="Placeholder"
             className="img-fluid w-100"
             style={{ maxWidth: "100%", height: "15rem" }}
