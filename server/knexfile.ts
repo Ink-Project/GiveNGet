@@ -4,6 +4,10 @@ import { Knex } from "knex";
 
 dotenv.config();
 
+if (process.env.IN_DEPLOY) {
+  process.env.NODE_ENV = "production";
+}
+
 /*
 We'll use environment variables to set the Postgres username and password
 so we don't share that information online.
