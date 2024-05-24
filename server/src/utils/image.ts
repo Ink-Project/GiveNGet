@@ -1,7 +1,7 @@
 import { writeFile, mkdir } from "fs/promises";
 import { randomUUID } from "crypto";
 import { v2 as cloudinary } from "cloudinary";
-import { DBG_IMAGES_PATH, DBG_IMAGES_URL_PATH, IS_PRODUCTION } from ".";
+import { DBG_IMAGES_PATH, DBG_IMAGES_URL_PATH } from ".";
 
 const exts: Partial<Record<string, string>> = {
   "image/png": "png",
@@ -46,4 +46,5 @@ const processImageProd = (image: string) => {
  * Download/decode `image` and save it to the public images folder
  * @returns The public URL to the image on our server
  */
-export const processImage = IS_PRODUCTION ? processImageProd : processImageLocal;
+export const processImage =
+  process.env.NODE_ENV === "production" ? processImageProd : processImageLocal;

@@ -1,21 +1,11 @@
 import path from "path";
 import express from "express";
-import dotenv from "dotenv";
-import { v2 as cloudinary } from "cloudinary";
 import cookieSession from "cookie-session";
 import { userRouter, authRouter, postRouter, resvRouter } from "./routers";
-import { DBG_IMAGES_PATH, DBG_IMAGES_URL_PATH, IS_PRODUCTION, PROJECT_ROOT } from "./utils";
+import { DBG_IMAGES_PATH, DBG_IMAGES_URL_PATH, PROJECT_ROOT } from "./utils";
+import initCommon from "./init";
 
-dotenv.config();
-
-if (IS_PRODUCTION) {
-  cloudinary.config({
-    secure: true,
-    cloud_name: process.env.CLOUDINARY_CLOUD,
-    api_key: process.env.CLOUDINARY_KEY,
-    api_secret: process.env.CLOUDINARY_SECRET,
-  });
-}
+initCommon();
 
 const FRONTEND_DIST = path.join(PROJECT_ROOT, "../frontend/dist");
 const app = express();
@@ -41,7 +31,7 @@ app.use((req, _res, next) => {
 app.use(express.json()); // parse incoming request bodies as JSON
 app.use(express.static(FRONTEND_DIST)); // Serve static assets from the dist folder of the frontend
 
-if (!IS_PRODUCTION) {
+if (process.env.NODE_ENV !== "production") {
   app.use(DBG_IMAGES_URL_PATH, express.static(DBG_IMAGES_PATH));
 }
 

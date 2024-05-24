@@ -1,12 +1,8 @@
-import dotenv from "dotenv";
 import path from "path";
 import { Knex } from "knex";
+import initCommon from "./src/init";
 
-dotenv.config();
-
-if (process.env.IN_DEPLOY) {
-  process.env.NODE_ENV = "production";
-}
+initCommon();
 
 /*
 We'll use environment variables to set the Postgres username and password
